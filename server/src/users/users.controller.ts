@@ -8,47 +8,48 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
+import { User } from './user.entity';
 
 @Controller('api/users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  getUsers(@Query('profession') profession: string) {
-    return this.usersService.getUsers(profession);
+  getUsers(): Promise<User[]> {
+    return this.usersService.getUsers();
   }
 
   @Get(':id')
-  // @HttpCode(404)
-  getUser(@Param('id', ParseIntPipe) id: number) {
+  getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
     try {
-      return this.usersService.getUser(id);
+      return this.usersService.getUserById(id);
     } catch (_error) {
       throw new NotFoundException('User Not Found');
     }
   }
 
   @Post()
-  create(@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
-    this.usersService.createUser(createUserDto);
+  createUser(
+    @Body(new ValidationPipe()) createUserDto: CreateUserDto,
+  ): Promise<User> {
+    return this.usersService.createUser(createUserDto);
   }
 
   @Put(':id')
-  update(
+  updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
-  ) {
-    this.usersService.updateUser(id, updateUserDto);
+  ): Promise<User> {
+    return this.usersService.updateUser(id, updateUserDto);
   }
 
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number) {
-    this.usersService.deleteUser(id);
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.deleteUser(id);
   }
 }

@@ -3,91 +3,61 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '../user.entity';
+import { User } from './user.entity';
+import * as bcrypt from 'bcrypt';
+import { create } from 'domain';
 
 @Injectable()
 export class UsersService {
-  private users = [
-    {
-      id: 1,
-      name: 'John Smith',
-      phone: '+15145551234',
-      profession: 'Software Engineer',
-    },
-    {
-      id: 2,
-      name: 'Jane Doe',
-      phone: '+15145552345',
-      profession: 'Marketing Manager',
-    },
-    {
-      id: 3,
-      name: 'Bob Johnson',
-      phone: '+15145553456',
-      profession: 'Graphic Designer',
-    },
-    {
-      id: 4,
-      name: 'Emily Davis',
-      phone: '+15145554567',
-      profession: 'Data Analyst',
-    },
-    {
-      id: 5,
-      name: 'Alex Brown',
-      phone: '+15145555678',
-      profession: 'Product Manager',
-    },
-  ];
+  constructor(@InjectRepository(User) private usersRepo: Repository<User>) {}
 
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
-
-  getUsers(profession?: string) {
-    if (profession) {
-      return this.users.filter((u) => u.profession === profession);
-    }
-    return this.users;
+  getUsers(): Promise<User[]> {
+    return this.usersRepo.find();
   }
 
-  getUser(id: number) {
-    const user = this.users.find((u) => u.id === id);
+  async getUserById(id: number): Promise<User> {
+    const user = await this.usersRepo.findOne({ where: { id } });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('User Not Found');
     }
 
     return user;
   }
 
-  createUser(createUserDto: CreateUserDto) {
-    const userToAdd = {
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const passwordHash = await bcrypt.hash(createUserDto.password, 10);
+
+    const userToCreate = {
       ...createUserDto,
-      id: Math.round(Math.random() * 10000),
+      passwordHash,
+      messages: [],
+      groups: [],
     };
-    this.users.push(userToAdd);
-    console.log(userToAdd);
-    return JSON.parse(JSON.stringify(userToAdd));
+    const newUser = this.usersRepo.create(userToCreate);
+
+    return this.usersRepo.save(newUser);
   }
 
-  updateUser(id: number, updateUserDto: UpdateUserDto) {
-    this.users = this.users.map((user) => {
-      if (user.id === id) {
-        return {
-          ...user,
-          ...updateUserDto,
-        };
-      }
-      return user;
-    });
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user: User = await this.getUserById(id);
 
-    return this.getUser(id);
+    const passwordHash = await bcrypt.hash(updateUserDto.password, 10);
+
+    const updatedUser = {
+      ...user,
+      ...updateUserDto,
+      passwordHash,
+    };
+
+    return this.usersRepo.save(updatedUser);
   }
 
-  deleteUser(id: number) {
-    const toBeDeleted = this.users.find((user) => user.id === id);
+  async deleteUser(id: number): Promise<User> {
+    const user = await this.getUserById(id);
 
-    this.users = this.users.filter((user) => user.id !== id);
+    await this.usersRepo.remove(user);
 
-    return toBeDeleted;
+    return user;
   }
 }
