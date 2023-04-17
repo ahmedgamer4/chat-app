@@ -16,7 +16,7 @@ export class Message {
   date: Date;
 
   @Column({
-    type: 'text',
+    type: 'varchar',
   })
   username: string;
 

@@ -1,10 +1,12 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { config } from 'dotenv';
+
+config();
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   entities: [__dirname + '/../**/*.entity{.js,.ts}'],
   type: 'postgres',
-  url: `postgres://mydatabase_qgu8_user:
-wp8ObMr2e3xc5nZjr5sOdV0vi2OWzxDG@dpg-cgqlt2l269v32o9okrl0-a.frankfurt-postgres.render.com/mydatabase_qgu8?ssl=true`,
+  url: process.env.DATABASE_URI,
   // TODO: Do not forget to remove this in production
   synchronize: true,
 };

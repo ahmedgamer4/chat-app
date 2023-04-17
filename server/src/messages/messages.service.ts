@@ -1,4 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Body,
+  Injectable,
+  Param,
+  ParseIntPipe,
+  ValidationPipe,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -18,8 +24,15 @@ export class MessagesService {
     return this.messagesRepo.find();
   }
 
-  createMessage(createMessageDto: CreateMessageDto): Promise<Message> {
-    const newMessage = this.messagesRepo.create(createMessageDto);
+  createMessage(
+    @Param(':id', ParseIntPipe) id: number,
+    @Body() createMessageDto: CreateMessageDto,
+  ): Promise<Message> {
+    const messageToCreate: CreateMessageDto = {
+      ...createMessageDto,
+      date: new Date(),
+    };
+    const newMessage = this.messagesRepo.create();
 
     return this.messagesRepo.save(newMessage);
   }

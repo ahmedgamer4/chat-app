@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
-import { create } from 'domain';
 
 @Injectable()
 export class UsersService {
@@ -19,10 +18,24 @@ export class UsersService {
     const user = await this.usersRepo.findOne({ where: { id } });
 
     if (!user) {
-      throw new Error('User Not Found');
+      throw new HttpException(
+        {
+          status: 404,
+          errors: {
+            user: 'User Not Found',
+          },
+        },
+        404,
+      );
     }
 
     return user;
+  }
+
+  findOne(fields: FindOptionsWhere<User>): Promise<User> {
+    return this.usersRepo.findOne({
+      where: fields,
+    });
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {

@@ -1,8 +1,10 @@
-import { Controller, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { Message } from './message.entity';
 import { MessagesService } from './messages.service';
 
+@ApiTags('Messages')
 @Controller('messages')
 export class MessagesController {
   constructor(private messagesService: MessagesService) {}
@@ -13,7 +15,10 @@ export class MessagesController {
     return this.messagesService.getMessages(group_id);
   }
 
-  createMessage(createMessageDto: CreateMessageDto) {
-    return this.messagesService.createMessage(createMessageDto);
+  createMessage(
+    @Param(':id', ParseIntPipe) id: number,
+    createMessageDto: CreateMessageDto,
+  ) {
+    return this.messagesService.createMessage(id, createMessageDto);
   }
 }
