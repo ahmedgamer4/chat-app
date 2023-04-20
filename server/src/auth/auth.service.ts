@@ -1,4 +1,4 @@
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 import * as bcrypt from 'bcrypt';
 import { HttpException, Injectable } from '@nestjs/common';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
@@ -51,7 +51,8 @@ export class AuthService {
 
     if (isValidPassword) {
       const token = this.jwtService.sign({
-        id: user.id,
+        sub: user.id,
+        username: user.name,
       });
 
       return { token, user };

@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { ChatModule } from './chat/chat.module';
 import authConfig from './config/auth.config';
 
 @Module({
@@ -22,6 +23,7 @@ import authConfig from './config/auth.config';
       load: [authConfig],
       envFilePath: ['.env'],
     }),
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

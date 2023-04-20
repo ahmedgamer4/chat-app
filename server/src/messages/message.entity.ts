@@ -1,32 +1,35 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { Group } from '../groups/group.entity';
+import { User } from '../users/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('messages')
 export class Message {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty()
   @Column({
     type: 'text',
   })
   content: string;
 
+  @ApiProperty()
   @Column({
     type: 'date',
   })
   date: Date;
 
-  @Column({
-    type: 'varchar',
+  @ApiProperty()
+  @ManyToOne(() => User, (user: User) => user.messages, {
+    onDelete: 'CASCADE',
   })
-  username: string;
+  user: User;
 
-  @Column({
-    type: 'int',
+  @ApiProperty()
+  @ManyToOne(() => Group, (group: Group) => group.messages, {
+    onDelete: 'CASCADE',
   })
-  user_id: number;
-
-  @Column({
-    type: 'int',
-  })
-  group_id: number;
+  group: Group;
 }

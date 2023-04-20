@@ -1,10 +1,4 @@
-import {
-  Body,
-  Injectable,
-  Param,
-  ParseIntPipe,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -18,21 +12,28 @@ export class MessagesService {
 
   getMessages(group_id?: number): Promise<Message[]> {
     if (group_id) {
-      return this.messagesRepo.find({ where: { group_id } });
+      return this.messagesRepo.find();
     }
 
     return this.messagesRepo.find();
   }
 
   createMessage(
-    @Param(':id', ParseIntPipe) id: number,
-    @Body() createMessageDto: CreateMessageDto,
+    createMessageDto: CreateMessageDto,
+    req: any,
+    group_id: number,
   ): Promise<Message> {
-    const messageToCreate: CreateMessageDto = {
+    const messageToCreate = {
       ...createMessageDto,
+      group_id,
+      user_id: req.user.sub,
+      username: req.user.username,
       date: new Date(),
     };
-    const newMessage = this.messagesRepo.create();
+
+    console.log(messageToCreate);
+
+    const newMessage = this.messagesRepo.create(messageToCreate);
 
     return this.messagesRepo.save(newMessage);
   }

@@ -8,25 +8,36 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Users')
 @Controller('api/users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({ type: User, isArray: true })
   @Get()
   getUsers(): Promise<User[]> {
     return this.usersService.getUsers();
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({ type: User })
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
     try {
@@ -42,7 +53,9 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({ type: User })
+  @UseGuards(AuthGuard('jwt'))
   @Put(':id')
   updateUser(
     @Param('id', ParseIntPipe) id: number,
@@ -51,7 +64,9 @@ export class UsersController {
     return this.usersService.updateUser(id, updateUserDto);
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({ type: User })
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.deleteUser(id);

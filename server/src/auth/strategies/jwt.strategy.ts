@@ -4,8 +4,10 @@ import { PassportModule, PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 
 type JwtPayload = {
-  id: number;
+  sub: number;
+  username: string;
   iat: number;
+  exp: number;
 };
 
 @Injectable()
@@ -15,11 +17,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.get('auth.secret'),
       // TODO: Do not forget to add ignoreExipration in production
+      ignoreExipration: false,
     });
   }
 
   public validate(payload: JwtPayload) {
-    if (!payload.id) {
+    if (!payload.sub) {
       throw new UnauthorizedException();
     }
     return payload;

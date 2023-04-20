@@ -2,9 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { AuthService } from '../src/auth/auth.service';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let jwtToken: string;
+  const newUserName = `Tester${Date.now()}`;
+  const newUserEmail = `User.${Date.now()}@example.com`;
+  const newUserPassword = `secret`;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -21,4 +26,59 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('Hello World!');
   });
+
+  it('/ (GET) fail to find when token is not provided', async () => {
+    return request(app.getHttpServer()).get('/api/users').expect(401);
+  });
+
+  it('/ (POST) cannot create new user if the email is already user', async () => {
+    const newUser = {
+      name: 'ahmed',
+      email: 'email@email.com',
+      password: 'ahmed123',
+    };
+
+    return request(app.getHttpServer())
+      .post('/api/users')
+      .send(newUser)
+      .expect(400);
+  });
+
+  it('/ (POST) create new user', async () => {
+    const newUser = {
+      name: newUserName,
+      email: newUserEmail,
+      password: newUserPassword,
+    };
+
+    return request(app.getHttpServer())
+      .post('/api/users')
+      .send(newUser)
+      .expect(201);
+  });
+
+  it('/ (POST) can login user', async () => {
+    return request(app.getHttpServer())
+      .post('/api/auth/email/login')
+      .send({
+        email: 'email@email.com',
+        password: 'ahmed123',
+      })
+      .expect(200)
+      .then(({ body }) => {
+        jwtToken = body.token;
+      });
+  });
+
+  // describe('When user is logged in', () => {
+  //   beforeAll(async () => {
+  //     const userToLogin =
+  //     const authService = new AuthService()
+  //     authService.validateLogin(userToLogin);
+  //   });
+  // });
+  //
+  // it('/ (GET) can get a user with id', async () => {
+  //   return request(app.getHttpServer()).get('/api/users/4').expect(200);
+  // });
 });

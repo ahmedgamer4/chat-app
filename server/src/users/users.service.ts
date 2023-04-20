@@ -1,14 +1,18 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
+import { REQUEST } from '@nestjs/core';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UsersService {
-  constructor(@InjectRepository(User) private usersRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private usersRepo: Repository<User>,
+    @Inject(REQUEST) private readonly request: Request,
+  ) {}
 
   getUsers(): Promise<User[]> {
     return this.usersRepo.find();
@@ -39,10 +43,27 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const passwordHash = await bcrypt.hash(createUserDto.password, 10);
+    const user = await this.findOne({ email: createUserDto.email });
+    if (user) {
+      throw new HttpException(
+        {
+          status: 400,
+          errors: {
+            user: 'email is already used',
+          },
+        },
+        400,
+      );
+    }
+    const passwordHash: string = await bcrypt.hash(createUserDto.password, 10);
 
+    const { name, email, githubId, googleId, facebookId } = createUserDto;
     const userToCreate = {
-      ...createUserDto,
+      name,
+      email,
+      githubId,
+      googleId,
+      facebookId,
       passwordHash,
       messages: [],
       groups: [],
@@ -57,13 +78,16 @@ export class UsersService {
 
     const passwordHash = await bcrypt.hash(updateUserDto.password, 10);
 
+    const { name } = updateUserDto;
     const updatedUser = {
       ...user,
-      ...updateUserDto,
+      name,
       passwordHash,
     };
 
-    return this.usersRepo.save(updatedUser);
+    const userToUpload = this.usersRepo.create(updatedUser);
+
+    return this.usersRepo.save(userToUpload);
   }
 
   async deleteUser(id: number): Promise<User> {

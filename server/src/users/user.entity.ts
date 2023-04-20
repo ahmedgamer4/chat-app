@@ -1,5 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import type { Group } from '../groups/group.entity';
+import type { Message } from '../messages/message.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 
 /* eslint-disable no-undef-init */
 @Entity('users')
@@ -27,12 +37,13 @@ export class User {
   passwordHash: string;
 
   @ApiProperty()
-  @Column('text', { array: true })
-  messages: string[];
+  @OneToMany('Message', 'user')
+  messages: Relation<Message[]>;
 
   @ApiProperty()
-  @Column('text', { array: true })
-  groups: string[];
+  @ManyToMany('Group', 'user')
+  @JoinTable()
+  groups: Relation<Group[]>;
 
   @ApiProperty()
   @Column({

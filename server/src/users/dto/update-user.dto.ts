@@ -5,14 +5,28 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { CreateUserDto } from './create-user.dto';
 
-export class UpdateUserDto extends CreateUserDto {
-  @ApiProperty({ required: false })
-  messages?: string[];
+export class UpdateUserDto {
+  @MinLength(3)
+  @MaxLength(20)
+  @IsAlphanumeric()
+  @ApiProperty({
+    required: false,
+  })
+  name?: string;
+
+  @MinLength(3)
+  @IsAlphanumeric()
+  @ApiProperty({
+    required: false,
+  })
+  password?: string;
 
   @ApiProperty({ required: false })
-  groups?: string[];
+  messages?: number[];
+
+  @ApiProperty({ required: false })
+  groups?: number[];
 
   @ApiProperty({ required: false })
   @MinLength(5)
