@@ -7,7 +7,6 @@ export class UpdateGroupDto {
   messages: number[];
 
   @ApiProperty()
-  @MinLength(3)
   @IsNotEmpty()
   users: number[];
 }

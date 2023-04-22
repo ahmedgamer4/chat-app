@@ -1,25 +1,31 @@
-import { HttpException, Inject, Injectable, Scope } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  NotFoundException,
+  Scope,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
-import { REQUEST } from '@nestjs/core';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private usersRepo: Repository<User>,
-    @Inject(REQUEST) private readonly request: Request,
-  ) {}
+  constructor(@InjectRepository(User) private usersRepo: Repository<User>) {}
 
   getUsers(): Promise<User[]> {
     return this.usersRepo.find();
   }
 
   async getUserById(id: number): Promise<User> {
-    const user = await this.usersRepo.findOne({ where: { id } });
+    const user = await this.usersRepo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.messages', 'message')
+      // .leftJoinAndSelect('user.groups', 'group')
+      .where('user.id = :id', { id })
+      .getOne();
 
     if (!user) {
       throw new HttpException(
@@ -74,9 +80,54 @@ export class UsersService {
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user: User = await this.getUserById(id);
+    const user: User = await this.usersRepo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.messages', 'message')
+      .leftJoinAndSelect('user.groups', 'group')
+      .where('user.id = :id', { id })
+      .getOne();
 
-    const passwordHash = await bcrypt.hash(updateUserDto.password, 10);
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} is not found`);
+    }
+
+    if (updateUserDto.groups) {
+      await this.usersRepo
+        .createQueryBuilder('user')
+        .relation(User, 'groups')
+        .of(user)
+        .addAndRemove(updateUserDto.groups, user.groups);
+
+      user.groups = await this.usersRepo
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.groups', 'group')
+        .where('user.id = :id', { id: user.id })
+        .getOne()
+        .then((user: User) => user.groups);
+
+      console.log(user.groups);
+    }
+
+    if (updateUserDto.messages) {
+      await this.usersRepo
+        .createQueryBuilder('user')
+        .relation(User, 'messages')
+        .of(user)
+        .addAndRemove(updateUserDto.messages, user.messages);
+
+      user.messages = await this.usersRepo
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.messages', 'message')
+        .where('user.id = :id', { id: user.id })
+        .getOne()
+        .then((user: User) => user.messages);
+
+      console.log(user.messages);
+    }
+
+    const passwordHash = updateUserDto.password
+      ? await bcrypt.hash(updateUserDto.password, 10)
+      : user.passwordHash;
 
     const { name } = updateUserDto;
     const updatedUser = {

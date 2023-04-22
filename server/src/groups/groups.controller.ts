@@ -6,7 +6,9 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { Message } from 'src/messages/message.entity';
 import { User } from 'src/users/user.entity';
@@ -19,21 +21,25 @@ import { GroupsService } from './groups.service';
 export class GroupsController {
   constructor(private groupsService: GroupsService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   getAllGroups(): Promise<Group[]> {
     return this.groupsService.getAllGroups();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   getGroupById(@Param('id', ParseIntPipe) id: number): Promise<Group> {
     return this.groupsService.getGroupById(id);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   getGroupByName(name: string): Promise<Group> {
     return this.groupsService.getGroupByName(name);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   createGroup(@Body() createGroupDto: CreateGroupDto): Promise<Group> {
     return this.groupsService.createGroup(createGroupDto);

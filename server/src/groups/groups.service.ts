@@ -3,9 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Group } from './group.entity';
 import { CreateGroupDto } from './dto/create-group.dto';
-import { Message } from '../messages/message.entity';
 import { User } from 'src/users/user.entity';
-import { MessagesService } from 'src/messages/messages.service';
 
 @Injectable()
 export class GroupsService {
@@ -75,15 +73,20 @@ export class GroupsService {
     return this.groupsRepo.save(this.groupsRepo.create(updatedGroup));
   }
 
-  async addMessage(id: number, message: Message): Promise<Group> {
-    const group = await this.getGroupById(id);
-
-    const updatedGroup = {
-      ...group,
-      messages: group.messages.concat(message),
-    };
-
-    return this.groupsRepo.save(this.groupsRepo.create(updatedGroup));
+  async addMessage(group_id: number, req: any, message_id: number) {
+    // const {id, } = await this.getGroupById(group_id);
+    // const message = await this.messagesService.createMessage(
+    //   createMessageDto,
+    //   req,
+    //   group_id,
+    // );
+    //
+    // const updatedGroup = {
+    //   ...group,
+    //   messages: group.messages.concat(message.id),
+    // };
+    //
+    // return this.groupsRepo.save(this.groupsRepo.create(updatedGroup));
   }
 
   deleteGroups() {

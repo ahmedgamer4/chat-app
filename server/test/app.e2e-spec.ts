@@ -27,58 +27,102 @@ describe('AppController (e2e)', () => {
       .expect('Hello World!');
   });
 
-  it('/ (GET) fail to find when token is not provided', async () => {
-    return request(app.getHttpServer()).get('/api/users').expect(401);
-  });
+  describe('UsersController', () => {
+    it('/ (GET) fail to find when token is not provided', async () => {
+      return request(app.getHttpServer()).get('/api/users').expect(401);
+    });
 
-  it('/ (POST) cannot create new user if the email is already user', async () => {
-    const newUser = {
-      name: 'ahmed',
-      email: 'email@email.com',
-      password: 'ahmed123',
-    };
-
-    return request(app.getHttpServer())
-      .post('/api/users')
-      .send(newUser)
-      .expect(400);
-  });
-
-  it('/ (POST) create new user', async () => {
-    const newUser = {
-      name: newUserName,
-      email: newUserEmail,
-      password: newUserPassword,
-    };
-
-    return request(app.getHttpServer())
-      .post('/api/users')
-      .send(newUser)
-      .expect(201);
-  });
-
-  it('/ (POST) can login user', async () => {
-    return request(app.getHttpServer())
-      .post('/api/auth/email/login')
-      .send({
+    it('/ (POST) cannot create new user if the email is already user', async () => {
+      const newUser = {
+        name: 'ahmed',
         email: 'email@email.com',
         password: 'ahmed123',
-      })
-      .expect(200)
-      .then(({ body }) => {
-        jwtToken = body.token;
-      });
+      };
+
+      return request(app.getHttpServer())
+        .post('/api/users')
+        .send(newUser)
+        .expect(400);
+    });
+
+    it('/ (POST) create new user', async () => {
+      const newUser = {
+        name: newUserName,
+        email: newUserEmail,
+        password: newUserPassword,
+      };
+
+      return request(app.getHttpServer())
+        .post('/api/users')
+        .send(newUser)
+        .expect(201);
+    });
+
+    it('/ (POST) can login user', async () => {
+      return request(app.getHttpServer())
+        .post('/api/auth/email/login')
+        .send({
+          email: 'email@email.com',
+          password: 'ahmed123',
+        })
+        .expect(200)
+        .then(({ body }) => {
+          jwtToken = body.token;
+        });
+    });
+
+    it('/ (GET) can get a user with id when a user is logged in', async () => {
+      return request(app.getHttpServer())
+        .get('/api/users/33')
+        .auth(jwtToken, {
+          type: 'bearer',
+        })
+        .expect(200);
+    });
+
+    it('/ (PUT) can update existing user', async () => {
+      return request(app.getHttpServer())
+        .put('/api/users/33')
+        .send({
+          name: 'newName',
+        })
+        .auth(jwtToken, {
+          type: 'bearer',
+        })
+        .expect(200);
+    });
   });
 
-  // describe('When user is logged in', () => {
-  //   beforeAll(async () => {
-  //     const userToLogin =
-  //     const authService = new AuthService()
-  //     authService.validateLogin(userToLogin);
-  //   });
-  // });
-  //
-  // it('/ (GET) can get a user with id', async () => {
-  //   return request(app.getHttpServer()).get('/api/users/4').expect(200);
-  // });
+  describe('MessagesController', () => {
+    it('/ (GET) cannot get messages when user is not logged in', async () => {
+      return request(app.getHttpServer()).get('/api/messages').expect(401);
+    });
+
+    it('/ (GET) can get messages when user is logged in', async () => {
+      return request(app.getHttpServer())
+        .get('/api/messages')
+        .auth(jwtToken, {
+          type: 'bearer',
+        })
+        .expect(200);
+    });
+
+    it('/ (POST) create new message when user is not logged in', async () => {
+      return request(app.getHttpServer())
+        .post('/api/messages?group_id=1')
+        .send({
+          content: 'message',
+        })
+        .auth(jwtToken, {
+          type: 'bearer',
+        })
+        .expect(201);
+    });
+  });
+
+  describe('GroupsController', () => {
+    it('/ (GET) cannot get groups when user is not logged in', async () => {
+      return request(app.getHttpServer()).get('/api/groups').expect(401);
+    });
+  });
 });
