@@ -50,13 +50,13 @@ export class GroupsController {
   //   return this.groupsService.addUser(id, user);
   // }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Put(':group_id')
-  updateGroup(
-    @Param('group_id', ParseIntPipe) group_id: number,
-    @Request() req: any,
-    @Body() updateGroupDto: UpdateGroupDto,
-  ): Promise<Group> {
-    return this.groupsService.updateGroup(group_id, req, updateGroupDto);
-  }
+  //   @UseGuards(AuthGuard('jwt'))
+  //   @Put(':group_id')
+  //   updateGroup(
+  //     @Param('group_id', ParseIntPipe) group_id: number,
+  //     @Request() req: any,
+  //     @Body() updateGroupDto: UpdateGroupDto,
+  //   ): Promise<Group> {
+  //     return this.groupsService.updateGroup(group_id, req, updateGroupDto);
+  //   }
 }

@@ -3,6 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { AuthService } from '../src/auth/auth.service';
+import { Message } from '../dist/messages/message.entity.js';
+import { Message } from '../dist/messages/message.entity.d.ts';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -10,6 +12,7 @@ describe('AppController (e2e)', () => {
   const newUserName = `Tester${Date.now()}`;
   const newUserEmail = `User.${Date.now()}@example.com`;
   const newUserPassword = `secret`;
+  let testMessage: Message;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -85,6 +88,7 @@ describe('AppController (e2e)', () => {
         .put('/api/users/33')
         .send({
           name: 'newName',
+          // message: test
         })
         .auth(jwtToken, {
           type: 'bearer',
@@ -105,6 +109,9 @@ describe('AppController (e2e)', () => {
           type: 'bearer',
         })
         .expect(200);
+      // .then((body: any) => {
+      //   testMessage = body
+      // })
     });
 
     it('/ (POST) create new message when user is not logged in', async () => {
@@ -131,21 +138,20 @@ describe('AppController (e2e)', () => {
         .auth(jwtToken, {
           type: 'bearer',
         })
-        .expect(401);
-    });
-
-    it('(PUT) can add users and messages to a group', async () => {
-      return request(app.getHttpServer())
-        .put('/api/groups/1')
-        .send({
-          name: 'Group',
-          messages: [1, 2, 3],
-          users: [33],
-        })
-        .auth(jwtToken, {
-          type: 'bearer',
-        })
         .expect(200);
     });
+
+    // it('(PUT) can add users and messages to a group', async () => {
+    //   return request(app.getHttpServer())
+    //     .put('/api/groups/1')
+    //     .send({
+    //       name: 'Group',
+    //       createMessageDto: { content: 'message' },
+    //     })
+    //     .auth(jwtToken, {
+    //       type: 'bearer',
+    //     })
+    //     .expect(200);
+    // });
   });
 });

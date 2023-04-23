@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createQueryBuilder, Repository } from 'typeorm';
 import { Group } from './group.entity';
@@ -29,8 +29,6 @@ export class GroupsService {
     };
 
     const newGroup = this.groupsRepo.create(groupToCreate);
-    console.log(newGroup);
-
     return this.groupsRepo.save(newGroup);
   }
 
@@ -86,29 +84,27 @@ export class GroupsService {
       .where('group.id=:id', { id: group_id })
       .getOne();
 
-    if (updateGroupDto.createMessageDto) {
-      const newMessage = await this.messagesService.createMessage(
-        updateGroupDto.createMessageDto,
-        req,
-      );
+    try {
+      if (updateGroupDto.user) {
+        await this.groupsRepo
+          .createQueryBuilder('group')
+          .relation(Group, 'users')
+          .of(group)
+          .addAndRemove([...group.users, updateGroupDto.user], group.users);
 
-      group.messages = [...group.messages, newMessage];
+        group.users = await this.groupsRepo
+          .createQueryBuilder('group')
+          .leftJoinAndSelect('group.messages', 'message')
+          .where('group.id = :id', { id: group.id })
+          .getOne()
+          .then((group: Group) => group.users);
+      }
+    } catch {
+      throw new BadRequestException('User is Already in This Group');
     }
-
-    // if (updateGroupDto.users) {
-    await this.groupsRepo
-      .createQueryBuilder('group')
-      .relation(Group, 'users')
-      .of(group)
-      .addAndRemove([...updateGroupDto.users], group.users);
-
-    group.users = await this.groupsRepo
-      .createQueryBuilder('group')
-      .leftJoinAndSelect('group.messages', 'message')
-      .where('group.id = :id', { id: group.id })
-      .getOne()
-      .then((group: Group) => group.users);
-    // }
+    if (updateGroupDto.message) {
+      group.messages = [...group.messages, updateGroupDto.message];
+    }
 
     return this.groupsRepo.save(group);
   }

@@ -74,18 +74,12 @@ export class UsersService {
       throw new NotFoundException(`User with id ${id} is not found`);
     }
 
-    if (updateUserDto.messages) {
+    if (updateUserDto.message) {
       await this.usersRepo
         .createQueryBuilder('user')
         .relation(User, 'messages')
         .of(user)
-        .addAndRemove(
-          [
-            ...updateUserDto.messages,
-            ...user.messages.map((m: Message) => m.id),
-          ],
-          user.messages,
-        );
+        .addAndRemove([updateUserDto.message, ...user.messages], user.messages);
 
       user.messages = await this.usersRepo
         .createQueryBuilder('user')

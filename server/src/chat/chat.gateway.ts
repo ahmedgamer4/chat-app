@@ -8,9 +8,11 @@ import { GroupsService } from '../groups/groups.service';
 import { MessageBody } from '@nestjs/websockets';
 import { Logger, Request } from '@nestjs/common';
 import { CreateMessageDto } from '../messages/dto/create-message.dto';
+import { UsersService } from '../users/users.service';
 
 type IPayload = {
   group_id: number;
+  user: number;
 } & CreateMessageDto;
 
 @WebSocketGateway({
@@ -27,15 +29,16 @@ export class ChatGateway {
   constructor(
     private messagesService: MessagesService,
     private groupsService: GroupsService,
+    private userssService: UsersService,
   ) {}
 
   handleConnection(client: any) {
-    this.logger.log('Client connected', client.id);
+    console.log('Client connected', client.id);
   }
 
-  handleDisconnect(client: any) {
-    this.logger.log('Client disconnected', client.id);
-  }
+  // handleDisconnect(client: any) {
+  //   this.logger.log('Client disconnected', client.id);
+  // }
 
   // @SubscribeMessage('message')
   // handleMessage(client: any, payload: any): string {
@@ -62,8 +65,12 @@ export class ChatGateway {
     );
 
     await this.groupsService.updateGroup(payload.group_id, req, {
-      createMessageDto: { content: payload.content },
-      users: [],
+      message,
+      user: payload.user,
+    });
+
+    await this.userssService.updateUser(req.user.sub, {
+      message: message,
     });
 
     this.server.emit('message', message);

@@ -28,8 +28,6 @@ export class MessagesService {
       date: new Date(),
     };
 
-    console.log(messageToCreate);
-
     const newMessage = this.messagesRepo.create(messageToCreate);
 
     return this.messagesRepo.save(newMessage);

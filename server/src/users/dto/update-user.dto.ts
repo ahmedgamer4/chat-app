@@ -7,6 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Message } from '../../messages/message.entity';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -28,7 +29,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @ApiProperty({ required: false })
-  messages?: number[];
+  message?: Message;
 
   @IsOptional()
   @ApiProperty({ required: false })
