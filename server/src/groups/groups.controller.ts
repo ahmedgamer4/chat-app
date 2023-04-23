@@ -11,11 +11,10 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { Message } from 'src/messages/message.entity';
-import { User } from 'src/users/user.entity';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { Group } from './group.entity';
 import { GroupsService } from './groups.service';
+import { UpdateGroupDto } from './dto/update-group.dto';
 
 @ApiTags('Groups')
 @Controller('api/groups')
@@ -51,12 +50,13 @@ export class GroupsController {
   //   return this.groupsService.addUser(id, user);
   // }
 
+  @UseGuards(AuthGuard('jwt'))
   @Put(':group_id')
-  addMessage(
+  updateGroup(
     @Param('group_id', ParseIntPipe) group_id: number,
     @Request() req: any,
-    message_id: number,
+    @Body() updateGroupDto: UpdateGroupDto,
   ): Promise<Group> {
-    return this.groupsService.addMessage(group_id, req, message_id);
+    return this.groupsService.updateGroup(group_id, req, updateGroupDto);
   }
 }

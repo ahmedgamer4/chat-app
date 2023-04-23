@@ -21,15 +21,14 @@ export class MessagesService {
   createMessage(
     createMessageDto: CreateMessageDto,
     req: any,
-    group_id: number,
   ): Promise<Message> {
     const messageToCreate = {
       ...createMessageDto,
-      group_id,
-      user_id: req.user.sub,
       username: req.user.username,
       date: new Date(),
     };
+
+    console.log(messageToCreate);
 
     const newMessage = this.messagesRepo.create(messageToCreate);
 

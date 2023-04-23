@@ -43,8 +43,7 @@ export class MessagesController {
   createMessage(
     @Body() createMessageDto: CreateMessageDto,
     @Request() req: any,
-    @Query('group_id', ParseIntPipe) group_id: number,
   ) {
-    return this.messagesService.createMessage(createMessageDto, req, group_id);
+    return this.messagesService.createMessage(createMessageDto, req);
   }
 }

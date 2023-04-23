@@ -17,6 +17,12 @@ export class Message {
 
   @ApiProperty()
   @Column({
+    type: 'text',
+  })
+  username: string;
+
+  @ApiProperty()
+  @Column({
     type: 'date',
   })
   date: Date;

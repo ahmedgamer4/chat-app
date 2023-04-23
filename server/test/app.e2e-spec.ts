@@ -124,5 +124,28 @@ describe('AppController (e2e)', () => {
     it('/ (GET) cannot get groups when user is not logged in', async () => {
       return request(app.getHttpServer()).get('/api/groups').expect(401);
     });
+
+    it('/ (GET) can get groups when user is logged in', async () => {
+      return request(app.getHttpServer())
+        .get('/api/groups')
+        .auth(jwtToken, {
+          type: 'bearer',
+        })
+        .expect(401);
+    });
+
+    it('(PUT) can add users and messages to a group', async () => {
+      return request(app.getHttpServer())
+        .put('/api/groups/1')
+        .send({
+          name: 'Group',
+          messages: [1, 2, 3],
+          users: [33],
+        })
+        .auth(jwtToken, {
+          type: 'bearer',
+        })
+        .expect(200);
+    });
   });
 });

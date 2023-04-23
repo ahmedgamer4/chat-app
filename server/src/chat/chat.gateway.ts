@@ -5,17 +5,19 @@ import {
 } from '@nestjs/websockets';
 import { MessagesService } from '../messages/messages.service';
 import { GroupsService } from '../groups/groups.service';
-import { Message } from '../messages/message.entity';
 import { MessageBody } from '@nestjs/websockets';
-import { Logger, Param, Request } from '@nestjs/common';
+import { Logger, Request } from '@nestjs/common';
 import { CreateMessageDto } from '../messages/dto/create-message.dto';
-import { JwtService } from '@nestjs/jwt';
 
 type IPayload = {
   group_id: number;
 } & CreateMessageDto;
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class ChatGateway {
   @WebSocketServer()
   server;
@@ -35,10 +37,10 @@ export class ChatGateway {
     this.logger.log('Client disconnected', client.id);
   }
 
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    return 'Hello world!';
-  }
+  // @SubscribeMessage('message')
+  // handleMessage(client: any, payload: any): string {
+  //   return 'Hello world!';
+  // }
 
   @SubscribeMessage('findAllMessages')
   async findAllMessages() {
@@ -46,15 +48,23 @@ export class ChatGateway {
     this.server.emit('messages', messages);
   }
 
+  @SubscribeMessage('findAllMessagesInGroup')
+  async findAllMessagesInGroup(@MessageBody() group_id: number) {
+    const group = await this.groupsService.getGroupById(group_id);
+    this.server.emit('messages', group.messages);
+  }
+
   @SubscribeMessage('createMessage')
   async createMessage(@MessageBody() payload: IPayload, @Request() req: any) {
     const message = await this.messagesService.createMessage(
       { content: payload.content },
       req,
-      payload.group_id,
     );
 
-    await this.groupsService.addMessage(payload.group_id, req, message.id);
+    await this.groupsService.updateGroup(payload.group_id, req, {
+      createMessageDto: { content: payload.content },
+      users: [],
+    });
 
     this.server.emit('message', message);
   }

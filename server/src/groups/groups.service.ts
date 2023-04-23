@@ -4,12 +4,18 @@ import { createQueryBuilder, Repository } from 'typeorm';
 import { Group } from './group.entity';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { User } from 'src/users/user.entity';
-import { create } from 'domain';
-import { Message } from 'src/messages/message.entity';
+import { MessagesService } from '../messages/messages.service';
+import { UsersService } from '../users/users.service';
+import { UpdateGroupDto } from './dto/update-group.dto';
+import { userInfo } from 'os';
 
 @Injectable()
 export class GroupsService {
-  constructor(@InjectRepository(Group) private groupsRepo: Repository<Group>) {}
+  constructor(
+    @InjectRepository(Group) private groupsRepo: Repository<Group>,
+    private messagesService: MessagesService,
+    private usersService: UsersService,
+  ) {}
 
   getAllGroups(): Promise<Group[]> {
     return this.groupsRepo.find();
@@ -50,6 +56,7 @@ export class GroupsService {
     const group = await this.groupsRepo
       .createQueryBuilder('group')
       .leftJoinAndSelect('group.users', 'user')
+      .leftJoinAndSelect('group.messages', 'message')
       .where('group.id=:id', { id })
       .getOne();
 
@@ -68,39 +75,40 @@ export class GroupsService {
     return group;
   }
 
-  async addUser(id: number, user: User): Promise<Group> {
-    const group = await this.getGroupById(id);
-
-    const updatedGroup = {
-      ...group,
-      users: group.users.concat(user),
-    };
-
-    return this.groupsRepo.save(this.groupsRepo.create(updatedGroup));
-  }
-
-  async addMessage(group_id: number, req: any, message_id: number) {
+  async updateGroup(
+    group_id: number,
+    req: any,
+    updateGroupDto: UpdateGroupDto,
+  ) {
     const group = await this.groupsRepo
       .createQueryBuilder('group')
       .leftJoinAndSelect('group.messages', 'message')
       .where('group.id=:id', { id: group_id })
       .getOne();
 
-    await this.groupsRepo
-      .createQueryBuilder('group')
-      .relation(Group, 'messages')
-      .of(group)
-      .addAndRemove(
-        [...group.messages.map((m: Message) => m.id), message_id],
-        group.messages,
+    if (updateGroupDto.createMessageDto) {
+      const newMessage = await this.messagesService.createMessage(
+        updateGroupDto.createMessageDto,
+        req,
       );
 
-    group.messages = await this.groupsRepo
+      group.messages = [...group.messages, newMessage];
+    }
+
+    // if (updateGroupDto.users) {
+    await this.groupsRepo
+      .createQueryBuilder('group')
+      .relation(Group, 'users')
+      .of(group)
+      .addAndRemove([...updateGroupDto.users], group.users);
+
+    group.users = await this.groupsRepo
       .createQueryBuilder('group')
       .leftJoinAndSelect('group.messages', 'message')
-      .where('group.id=:id', { id: group.id })
+      .where('group.id = :id', { id: group.id })
       .getOne()
-      .then((group: Group) => group.messages);
+      .then((group: Group) => group.users);
+    // }
 
     return this.groupsRepo.save(group);
   }
