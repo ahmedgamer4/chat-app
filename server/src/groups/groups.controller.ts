@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -50,11 +51,12 @@ export class GroupsController {
   //   return this.groupsService.addUser(id, user);
   // }
 
-  // @Put(':id')
-  // addMessage(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   message: Message,
-  // ): Promise<Group> {
-  //   return this.groupsService.addMessage(id, message);
-  // }
+  @Put(':group_id')
+  addMessage(
+    @Param('group_id', ParseIntPipe) group_id: number,
+    @Request() req: any,
+    message_id: number,
+  ): Promise<Group> {
+    return this.groupsService.addMessage(group_id, req, message_id);
+  }
 }

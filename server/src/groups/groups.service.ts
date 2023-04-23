@@ -1,9 +1,11 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { createQueryBuilder, Repository } from 'typeorm';
 import { Group } from './group.entity';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { User } from 'src/users/user.entity';
+import { create } from 'domain';
+import { Message } from 'src/messages/message.entity';
 
 @Injectable()
 export class GroupsService {
@@ -45,7 +47,11 @@ export class GroupsService {
   }
 
   async getGroupById(id: number): Promise<Group> {
-    const group = await this.groupsRepo.findOne({ where: { id } });
+    const group = await this.groupsRepo
+      .createQueryBuilder('group')
+      .leftJoinAndSelect('group.users', 'user')
+      .where('group.id=:id', { id })
+      .getOne();
 
     if (!group) {
       throw new HttpException(
@@ -74,19 +80,29 @@ export class GroupsService {
   }
 
   async addMessage(group_id: number, req: any, message_id: number) {
-    // const {id, } = await this.getGroupById(group_id);
-    // const message = await this.messagesService.createMessage(
-    //   createMessageDto,
-    //   req,
-    //   group_id,
-    // );
-    //
-    // const updatedGroup = {
-    //   ...group,
-    //   messages: group.messages.concat(message.id),
-    // };
-    //
-    // return this.groupsRepo.save(this.groupsRepo.create(updatedGroup));
+    const group = await this.groupsRepo
+      .createQueryBuilder('group')
+      .leftJoinAndSelect('group.messages', 'message')
+      .where('group.id=:id', { id: group_id })
+      .getOne();
+
+    await this.groupsRepo
+      .createQueryBuilder('group')
+      .relation(Group, 'messages')
+      .of(group)
+      .addAndRemove(
+        [...group.messages.map((m: Message) => m.id), message_id],
+        group.messages,
+      );
+
+    group.messages = await this.groupsRepo
+      .createQueryBuilder('group')
+      .leftJoinAndSelect('group.messages', 'message')
+      .where('group.id=:id', { id: group.id })
+      .getOne()
+      .then((group: Group) => group.messages);
+
+    return this.groupsRepo.save(group);
   }
 
   deleteGroups() {

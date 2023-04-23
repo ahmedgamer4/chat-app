@@ -4,7 +4,6 @@ import type { Message } from '../messages/message.entity';
 import {
   Column,
   Entity,
-  JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -42,7 +41,6 @@ export class User {
 
   @ApiProperty()
   @ManyToMany('Group', 'user')
-  @JoinTable()
   groups: Relation<Group[]>;
 
   @ApiProperty()

@@ -1,6 +1,11 @@
 import { User } from '../users/user.entity';
 import * as bcrypt from 'bcrypt';
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -33,15 +38,7 @@ export class AuthService {
       email: loginDto.email,
     });
     if (!user) {
-      throw new HttpException(
-        {
-          status: 404,
-          errors: {
-            email: 'notFound',
-          },
-        },
-        404,
-      );
+      throw new NotFoundException('User Not Found');
     }
 
     const isValidPassword = await bcrypt.compare(
@@ -57,15 +54,7 @@ export class AuthService {
 
       return { token, user };
     } else {
-      throw new HttpException(
-        {
-          status: 400,
-          errors: {
-            password: 'Incorrect Password',
-          },
-        },
-        400,
-      );
+      throw new BadRequestException('Password is Incorrect');
     }
   }
 }

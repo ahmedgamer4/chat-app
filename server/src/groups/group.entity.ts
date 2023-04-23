@@ -37,5 +37,6 @@ export class Group {
 
   @ApiProperty()
   @ManyToMany('User', 'groups')
+  @JoinTable()
   users: Relation<User[]>;
 }

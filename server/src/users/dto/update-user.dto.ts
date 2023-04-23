@@ -32,10 +32,6 @@ export class UpdateUserDto {
 
   @IsOptional()
   @ApiProperty({ required: false })
-  groups?: number[];
-
-  @IsOptional()
-  @ApiProperty({ required: false })
   @MinLength(5)
   @MaxLength(5000)
   @IsAlphanumeric()

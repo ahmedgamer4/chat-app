@@ -1,5 +1,5 @@
 import {
-  HttpException,
+  BadRequestException,
   Injectable,
   NotFoundException,
   Scope,
@@ -10,6 +10,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
+import { Message } from 'src/messages/message.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UsersService {
@@ -23,20 +24,11 @@ export class UsersService {
     const user = await this.usersRepo
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.messages', 'message')
-      // .leftJoinAndSelect('user.groups', 'group')
       .where('user.id = :id', { id })
       .getOne();
 
     if (!user) {
-      throw new HttpException(
-        {
-          status: 404,
-          errors: {
-            user: 'User Not Found',
-          },
-        },
-        404,
-      );
+      throw new NotFoundException('User Not Found');
     }
 
     return user;
@@ -51,15 +43,7 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const user = await this.findOne({ email: createUserDto.email });
     if (user) {
-      throw new HttpException(
-        {
-          status: 400,
-          errors: {
-            user: 'email is already used',
-          },
-        },
-        400,
-      );
+      throw new BadRequestException('Email is Already User');
     }
     const passwordHash: string = await bcrypt.hash(createUserDto.password, 10);
 
@@ -83,7 +67,6 @@ export class UsersService {
     const user: User = await this.usersRepo
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.messages', 'message')
-      .leftJoinAndSelect('user.groups', 'group')
       .where('user.id = :id', { id })
       .getOne();
 
@@ -91,29 +74,18 @@ export class UsersService {
       throw new NotFoundException(`User with id ${id} is not found`);
     }
 
-    if (updateUserDto.groups) {
-      await this.usersRepo
-        .createQueryBuilder('user')
-        .relation(User, 'groups')
-        .of(user)
-        .addAndRemove(updateUserDto.groups, user.groups);
-
-      user.groups = await this.usersRepo
-        .createQueryBuilder('user')
-        .leftJoinAndSelect('user.groups', 'group')
-        .where('user.id = :id', { id: user.id })
-        .getOne()
-        .then((user: User) => user.groups);
-
-      console.log(user.groups);
-    }
-
     if (updateUserDto.messages) {
       await this.usersRepo
         .createQueryBuilder('user')
         .relation(User, 'messages')
         .of(user)
-        .addAndRemove(updateUserDto.messages, user.messages);
+        .addAndRemove(
+          [
+            ...updateUserDto.messages,
+            ...user.messages.map((m: Message) => m.id),
+          ],
+          user.messages,
+        );
 
       user.messages = await this.usersRepo
         .createQueryBuilder('user')
@@ -121,8 +93,6 @@ export class UsersService {
         .where('user.id = :id', { id: user.id })
         .getOne()
         .then((user: User) => user.messages);
-
-      console.log(user.messages);
     }
 
     const passwordHash = updateUserDto.password
