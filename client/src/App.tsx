@@ -8,6 +8,7 @@ import { setToken } from "./services/auth";
 import { useAtom } from "jotai";
 import { userAtom } from "./context/atoms";
 import useDarkMode from "./hooks/useDarkMode";
+import Edit from "./pages/Edit";
 
 function App() {
   const { toggleTheme } = useDarkMode();
@@ -29,6 +30,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/edit" element={<Edit />} />
       </Routes>
       <Toaster />
     </div>

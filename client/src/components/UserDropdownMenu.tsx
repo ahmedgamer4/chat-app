@@ -20,23 +20,26 @@ const UserDropdownMenu = ({}) => {
         <img
           src={user.photo}
           alt={user.name}
-          className="text-xs bg-slate-700 rounded-md w-10 h-10"
+          className="text-xs bg-slate-700 rounded-md w-10 h-10 text-white"
         />
         <p className="text-sm">{user.name}</p>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-2 rounded-lg">
-        <DropdownMenuItem>
+        <DropdownMenuItem className="">
           <Link
             to="/profile"
-            className="flex items-center gap-2 bg-transparent"
+            className="flex items-center bg-transparent justify-between w-full text-[13px]"
           >
             <UserIcon size={18} />
             <p>My profile</p>
           </Link>
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="mt-2">
-          <Link to="/chat" className="flex items-center gap-2 bg-transparent">
+        <DropdownMenuItem className="mt-2 flex items-center justify-between w-full">
+          <Link
+            to="/chat"
+            className="flex items-center justify-between w-full bg-transparent text-[13px]"
+          >
             <UsersIcon size={18} />
             <p>Group Chat</p>
           </Link>
@@ -44,7 +47,7 @@ const UserDropdownMenu = ({}) => {
 
         <Separator className="my-2" />
         <DropdownMenuItem>
-          <button className="flex items-center py-0 justify-between w-full bg-transparent text-red-500 hover:bg-transparent">
+          <button className="flex items-center justify-between w-full text-red-500 hover:bg-transparent text-[13px]">
             <LogOut size={18} />
             <p>Logout</p>
           </button>

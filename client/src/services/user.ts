@@ -19,10 +19,10 @@ type UpdateUserDto = {
 };
 
 const config = {
-  headers: { Authorization: token },
+  headers: { Authorization: token.token },
 };
 
-const baseUrl = location.origin + "/api/users";
+const baseUrl = "http://localhost:3000/api/users";
 
 export const getAll = async () => {
   const users = await axios.get(baseUrl, config);
