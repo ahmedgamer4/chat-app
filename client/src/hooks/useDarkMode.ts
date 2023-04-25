@@ -9,16 +9,12 @@ export default () => {
   const toggleTheme = () => {
     if (theme === 'light') {
       setTheme('dark')
+      localStorage.setItem('theme', theme)
     } else {
       setTheme('light')
+      localStorage.setItem('theme', theme)
     }
   }
-
-  useEffect(() => {
-    const localTheme = localStorage.getItem('theme')
-    localTheme ?
-      setTheme(localTheme as Theme) : null
-  }, [])
 
   useEffect(() => {
     const localTheme = localStorage.getItem('theme')
@@ -29,5 +25,5 @@ export default () => {
     }
   }, [theme])
 
-  return [theme, toggleTheme]
+  return { theme, toggleTheme }
 }
