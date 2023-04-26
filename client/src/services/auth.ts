@@ -34,12 +34,15 @@ export const setToken = (newToken: string) => {
   token.token = `bearer ${newToken}`;
 };
 
+export const resetToken = () => {
+  token.token = "";
+};
+
 export const registerUser = async (data: RegisterUserDto) => {
   await axios.post(`${baseUrl}/email/register`, data);
 };
 
 export const loginUser = async (data: LoginUserDto) => {
-  console.log(data);
   const token = await axios.post(`${baseUrl}/email/login`, data);
   return token.data;
 };

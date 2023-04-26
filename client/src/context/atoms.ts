@@ -5,7 +5,14 @@ export const userAtom = atom({
   name: "",
   email: "",
   passwordHash: "",
-  messages: [],
+  messages: [
+    {
+      id: 0,
+      content: "",
+      date: new Date(),
+      username: "",
+    },
+  ],
   bio: "",
   photo: "",
   phone: "",

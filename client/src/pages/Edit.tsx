@@ -1,39 +1,55 @@
+import { useAtom } from "jotai";
+import { Loader2, MoonIcon } from "lucide-react";
 import React, { useState } from "react";
 import UserDropdownMenu from "../components/UserDropdownMenu";
-import { MoonIcon } from "lucide-react";
-import useDarkMode from "../hooks/useDarkMode";
-import { Input } from "../components/ui/Input";
-import { useAtom } from "jotai";
-import { userAtom } from "../context/atoms";
-import { updateUser } from "../services/user";
 import { Button } from "../components/ui/Button";
-import { toast } from "../hooks/useToast";
+import { Input } from "../components/ui/Input";
+import { userAtom } from "../context/atoms";
+import useDarkMode from "../hooks/useDarkMode";
+import { useToast } from "../hooks/useToast";
+import { UpdateUserDto, updateUser } from "../services/user";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const Edit = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [user, setUser] = useAtom(userAtom);
   const { toggleTheme } = useDarkMode();
-  const [user] = useAtom(userAtom);
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   const onEdit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const userToUpdate = {
-      name,
-      bio,
-      phone,
-      password,
-    };
+    const userToUpdate: UpdateUserDto = {};
 
+    if (name) userToUpdate.name = name;
+    if (bio) userToUpdate.bio = bio;
+    if (phone) userToUpdate.phone = phone;
+    if (password) userToUpdate.password = password;
     console.log(userToUpdate);
 
-    const data = await updateUser(user.id, userToUpdate);
+    if (Object.keys(userToUpdate).length === 0) {
+      toast({
+        title: "Invalid Data",
+        description: "cannot save this user",
+      });
+      return;
+    }
+    setLoading(true);
+    const updatedUser = await updateUser(user.id, userToUpdate);
+    setUser(updatedUser);
     toast({
       title: "Edited Successfully",
     });
-    console.log(data);
+    console.log(updatedUser);
+    setLoading(false);
+
+    navigate("/profile");
   };
 
   return (
@@ -42,7 +58,15 @@ const Edit = () => {
         <MoonIcon onClick={toggleTheme} className="cursor-pointer" />
         <UserDropdownMenu />
       </header>
-      <div className="mt-9 border rounded-lg w-full max-w-[800px] min-w-[200px] mx-auto text-gray-600 text-sm dark:text-white">
+      <div className="mx-auto mt-9 w-full max-w-[800px] min-w-[200px]">
+        <Link to="/profile">
+          <Button variant="ghost">
+            <ArrowLeft size={19} className="mr-1" />
+            <p>Back</p>
+          </Button>
+        </Link>
+      </div>
+      <div className="mt-4 border rounded-lg w-full max-w-[800px] min-w-[200px] mx-auto text-gray-600 text-sm dark:text-white">
         <form
           onSubmit={onEdit}
           className="sm:w-1/2 py-5 px-6 flex flex-col gap-y-4"
@@ -92,7 +116,12 @@ const Edit = () => {
               className="mt-2"
             />
           </label>
-          <Button className="w-24">Save</Button>
+          <Button disabled={isLoading} className="w-24">
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            Save
+          </Button>
         </form>
       </div>
       <div></div>

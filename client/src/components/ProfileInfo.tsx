@@ -2,9 +2,11 @@ import { useAtom } from "jotai";
 import { Button } from "../components/ui/Button";
 import { Separator } from "../components/ui/Separator";
 import { userAtom } from "../context/atoms";
+import { Link } from "react-router-dom";
 
 const ProfileInfo = () => {
   const [user] = useAtom(userAtom);
+  console.log(user);
 
   return (
     <section className="flex flex-col items-center mx-auto w-full max-w-[800px] min-w-[200px]">
@@ -18,7 +20,11 @@ const ProfileInfo = () => {
             <h4 className="text-xl">Profile</h4>
             <p className="text-xs">Some info may be visibel to other people</p>
           </div>
-          <Button variant="outline">Edit</Button>
+          <Button variant="outline">
+            <Link to="/edit" className="w-full h-full">
+              Edit
+            </Link>
+          </Button>
         </section>
         <Separator />
         <section className="flex justify-between py-5 px-6">
@@ -37,7 +43,9 @@ const ProfileInfo = () => {
         <Separator />
         <section className="flex justify-between py-5 px-6">
           <p>BIO</p>
-          <p className="text-gray-900 text-base dark:text-white">{user.bio}</p>
+          <p className="overflow-x-hidden text-gray-900 text-base dark:text-white">
+            {user.bio}
+          </p>
         </section>
         <Separator />
         <section className="flex justify-between py-5 px-6">

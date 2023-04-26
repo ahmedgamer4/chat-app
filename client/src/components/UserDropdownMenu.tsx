@@ -1,3 +1,6 @@
+import { useAtom } from "jotai";
+import { LogOut, UserIcon, UsersIcon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -5,15 +8,33 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/Dropdown";
 import { Separator } from "../components/ui/Separator";
-import { Link } from "react-router-dom";
-import { LogOut } from "lucide-react";
-import { UsersIcon } from "lucide-react";
-import { UserIcon } from "lucide-react";
-import { useAtom } from "jotai";
 import { userAtom } from "../context/atoms";
+import { resetToken, token } from "../services/auth";
 
 const UserDropdownMenu = ({}) => {
-  const [user] = useAtom(userAtom);
+  const navigate = useNavigate();
+  const [user, setUser] = useAtom(userAtom);
+
+  const logOut = () => {
+    localStorage.removeItem("loggedUser");
+    setUser({
+      id: 0,
+      name: "",
+      email: "",
+      passwordHash: "",
+      messages: [],
+      bio: "",
+      photo: "",
+      phone: "",
+      googleId: "",
+      githubId: "",
+      facebookId: "",
+    });
+    resetToken();
+    console.log(token);
+    navigate("/login");
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex gap-y-2 gap-x-3 items-center">
@@ -47,7 +68,10 @@ const UserDropdownMenu = ({}) => {
 
         <Separator className="my-2" />
         <DropdownMenuItem>
-          <button className="flex items-center justify-between w-full text-red-500 hover:bg-transparent text-[13px]">
+          <button
+            onClick={logOut}
+            className="flex items-center justify-between w-full text-red-500 hover:bg-transparent text-[13px]"
+          >
             <LogOut size={18} />
             <p>Logout</p>
           </button>

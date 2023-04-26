@@ -1,18 +1,20 @@
+import { useAtom } from "jotai";
+import { Loader2, LockIcon, MailIcon } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { userAtom } from "../context/atoms";
+import { useToast } from "../hooks/useToast";
+import { loginUser, setToken } from "../services/auth";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
-import { LockIcon, MailIcon } from "lucide-react";
-import { loginUser, setToken } from "../services/auth";
-import { useAtom } from "jotai";
-import { userAtom } from "../context/atoms";
-import { toast } from "../hooks/useToast";
-import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [, setUser] = useAtom(userAtom);
+  const [loading, setLoading] = useState(false);
 
   const onLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +33,10 @@ const LoginForm = () => {
     };
 
     try {
+      setLoading(true);
       const token = await loginUser(userToLogin);
+
+      setLoading(false);
 
       localStorage.setItem("loggedUser", JSON.stringify(token));
       setToken(token.token);
@@ -43,9 +48,6 @@ const LoginForm = () => {
 
       setEmail("");
       setPassword("");
-
-      console.log("user", token.user);
-      console.log("token", token.token);
     } catch (error) {
       toast({
         title: "Invalid Data",
@@ -83,7 +85,8 @@ const LoginForm = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </label>
-      <Button variant="default" className="mt-4 w-full">
+      <Button variant="default" className="mt-4 w-full" disabled={loading}>
+        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Start coding now
       </Button>
     </form>
