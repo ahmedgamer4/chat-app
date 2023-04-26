@@ -93,11 +93,15 @@ export class UsersService {
       ? await bcrypt.hash(updateUserDto.password, 10)
       : user.passwordHash;
 
-    const { name } = updateUserDto;
+    const { name, bio, photo, phone, password } = updateUserDto;
     const updatedUser = {
       ...user,
       name,
       passwordHash,
+      bio,
+      photo,
+      phone,
+      password,
     };
 
     const userToUpload = this.usersRepo.create(updatedUser);

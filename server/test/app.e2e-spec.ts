@@ -2,9 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { AuthService } from '../src/auth/auth.service';
-import { Message } from '../dist/messages/message.entity.js';
-import { Message } from '../dist/messages/message.entity.d.ts';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -12,7 +9,6 @@ describe('AppController (e2e)', () => {
   const newUserName = `Tester${Date.now()}`;
   const newUserEmail = `User.${Date.now()}@example.com`;
   const newUserPassword = `secret`;
-  let testMessage: Message;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({

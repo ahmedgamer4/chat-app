@@ -30,20 +30,15 @@ export class ChatGateway {
     private messagesService: MessagesService,
     private groupsService: GroupsService,
     private userssService: UsersService,
-  ) {}
+  ) { }
 
   handleConnection(client: any) {
     console.log('Client connected', client.id);
   }
 
-  // handleDisconnect(client: any) {
-  //   this.logger.log('Client disconnected', client.id);
-  // }
-
-  // @SubscribeMessage('message')
-  // handleMessage(client: any, payload: any): string {
-  //   return 'Hello world!';
-  // }
+  handleDisconnect(client: any) {
+    console.log('Client disconnected', client.id);
+  }
 
   @SubscribeMessage('findAllMessages')
   async findAllMessages() {

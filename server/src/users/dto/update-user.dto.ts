@@ -36,7 +36,6 @@ export class UpdateUserDto {
   @MinLength(5)
   @MaxLength(5000)
   @IsAlphanumeric()
-  @IsEmpty()
   bio?: string;
 
   @IsOptional()

@@ -6,8 +6,8 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -56,12 +56,13 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: User })
   @UseGuards(AuthGuard('jwt'))
-  @Put(':id')
-  updateUser(
+  @Patch(':id')
+  async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.usersService.updateUser(id, updateUserDto);
+    await this.usersService.updateUser(id, updateUserDto);
+    return this.usersService.getUserById(id);
   }
 
   @ApiBearerAuth()
