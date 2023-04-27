@@ -1,5 +1,7 @@
+import { VariantProps, cva } from "class-variance-authority";
+import React from "react";
 import { useAtom } from "jotai";
-import { LogOut, UserIcon, UsersIcon } from "lucide-react";
+import { GripVertical, LogOut, UserIcon, UsersIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -9,9 +11,29 @@ import {
 } from "../components/ui/Dropdown";
 import { Separator } from "../components/ui/Separator";
 import { userAtom } from "../context/atoms";
+import { cn } from "../lib/utils";
 import { resetToken, token } from "../services/auth";
 
-const UserDropdownMenu = ({}) => {
+const userDropdownMenuVariants = cva("", {
+  variants: {
+    size: {
+      default: "w-40",
+      wide: "w-60",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
+});
+
+export type UserDropdownMenuProps = VariantProps<
+  typeof userDropdownMenuVariants
+>;
+
+const UserDropdownMenu = React.forwardRef<
+  HTMLDivElement,
+  UserDropdownMenuProps
+>(({ size }, ref) => {
   const navigate = useNavigate();
   const [user, setUser] = useAtom(userAtom);
 
@@ -37,15 +59,20 @@ const UserDropdownMenu = ({}) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex gap-y-2 gap-x-3 items-center">
+      <DropdownMenuTrigger
+        className={`${cn(
+          userDropdownMenuVariants({ size })
+        )} flex gap-y-2 justify-between gap-x-3 items-center`}
+      >
         <img
           src={user.photo}
           alt={user.name}
-          className="text-xs bg-slate-700 rounded-md w-10 h-10 text-white"
+          className="text-xs bg-slate-900 rounded-md w-10 h-10 text-white"
         />
         <p className="text-sm">{user.name}</p>
+        <GripVertical size={18} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="p-2 rounded-lg">
+      <DropdownMenuContent className="w-40 p-2 rounded-lg">
         <DropdownMenuItem className="">
           <Link
             to="/profile"
@@ -79,6 +106,6 @@ const UserDropdownMenu = ({}) => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+});
 
 export default UserDropdownMenu;

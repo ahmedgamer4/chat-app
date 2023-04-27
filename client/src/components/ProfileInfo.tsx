@@ -30,7 +30,7 @@ const ProfileInfo = () => {
         <section className="flex justify-between py-5 px-6">
           <p>PHOTO</p>
           <img
-            className="w-14 h-14 rounded-lg text-white bg-slate-700"
+            className="w-14 h-14 rounded-lg text-white bg-slate-900"
             src={user.photo}
             alt={user.name}
           />

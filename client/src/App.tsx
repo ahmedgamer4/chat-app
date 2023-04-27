@@ -9,6 +9,33 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import { setToken, token } from "./services/auth";
+import Chat from "./pages/Chat";
+import * as React from "react";
+
+import { ScrollArea } from "./components/ui/ScrollArea";
+import { Separator } from "./components/ui/Separator";
+
+const tags = Array.from({ length: 50 }).map(
+  (_, i, a) => `v1.2.0-beta.${a.length - i}`
+);
+
+export function ScrollAreaDemo() {
+  return (
+    <ScrollArea className="h-72 w-48 rounded-md border">
+      <div className="p-4">
+        <h4 className="mb-4 text-sm font-medium leading-none">Tags</h4>
+        {tags.map((tag) => (
+          <React.Fragment>
+            <div className="text-sm" key={tag}>
+              {tag}
+            </div>
+            <Separator className="my-2" />
+          </React.Fragment>
+        ))}
+      </div>
+    </ScrollArea>
+  );
+}
 
 function App() {
   const navigate = useNavigate();
@@ -35,6 +62,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/edit" element={<Edit />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="*" element={<Navigate replace to="/login" />} />
       </Routes>
       <Toaster />

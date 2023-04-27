@@ -21,12 +21,60 @@ export const userAtom = atom({
   facebookId: "",
 });
 
+export const groupAtom = atom({
+  id: 0,
+  name: "",
+  description: "",
+  messages: [
+    {
+      id: 0,
+      content: "",
+      date: new Date(),
+      username: "",
+    },
+  ],
+  users: [
+    {
+      id: 0,
+      name: "",
+      email: "",
+      passwordHash: "",
+      bio: "",
+      photo: "",
+      phone: "",
+      googleId: "",
+      githubId: "",
+      facebookId: "",
+    },
+  ],
+});
+
 export const groupsAtom = atom([
   {
     id: 0,
     name: "",
     description: "",
-    messages: [],
-    users: [],
+    messages: [
+      {
+        id: 0,
+        content: "",
+        date: new Date(),
+        username: "",
+      },
+    ],
+    users: [
+      {
+        id: 0,
+        name: "",
+        email: "",
+        passwordHash: "",
+        bio: "",
+        photo: "",
+        phone: "",
+        googleId: "",
+        githubId: "",
+        facebookId: "",
+      },
+    ],
   },
 ]);
