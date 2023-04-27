@@ -21,6 +21,10 @@ export class GroupsService {
     return this.groupsRepo.find();
   }
 
+  getAllGroupsWithLimit(limit: number): Promise<Group[]> {
+    return this.groupsRepo.createQueryBuilder().limit(limit).getMany();
+  }
+
   createGroup(createGroupDto: CreateGroupDto): Promise<Group> {
     const groupToCreate = {
       ...createGroupDto,
