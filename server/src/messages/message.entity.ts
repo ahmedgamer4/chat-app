@@ -23,6 +23,14 @@ export class Message {
 
   @ApiProperty()
   @Column({
+    type: 'int',
+    // TODO: Remove when drop the tables
+    nullable: true,
+  })
+  user_id: number;
+
+  @ApiProperty()
+  @Column({
     type: 'date',
   })
   date: Date;

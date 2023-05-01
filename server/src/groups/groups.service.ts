@@ -1,21 +1,14 @@
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { createQueryBuilder, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Group } from './group.entity';
 import { CreateGroupDto } from './dto/create-group.dto';
-import { User } from 'src/users/user.entity';
-import { MessagesService } from '../messages/messages.service';
-import { UsersService } from '../users/users.service';
 import { UpdateGroupDto } from './dto/update-group.dto';
-import { userInfo } from 'os';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class GroupsService {
-  constructor(
-    @InjectRepository(Group) private groupsRepo: Repository<Group>,
-    private messagesService: MessagesService,
-    private usersService: UsersService,
-  ) {}
+  constructor(@InjectRepository(Group) private groupsRepo: Repository<Group>) {}
 
   getAllGroups(): Promise<Group[]> {
     return this.groupsRepo.find();
@@ -77,17 +70,14 @@ export class GroupsService {
     return group;
   }
 
-  async updateGroup(
-    group_id: number,
-    req: any,
-    updateGroupDto: UpdateGroupDto,
-  ) {
+  async updateGroup(group_id: number, updateGroupDto: UpdateGroupDto) {
     const group = await this.groupsRepo
       .createQueryBuilder('group')
       .leftJoinAndSelect('group.messages', 'message')
       .where('group.id=:id', { id: group_id })
       .getOne();
 
+    // add user to the group
     try {
       if (updateGroupDto.user) {
         await this.groupsRepo
@@ -106,6 +96,8 @@ export class GroupsService {
     } catch {
       throw new BadRequestException('User is Already in This Group');
     }
+
+    // add message to the group
     if (updateGroupDto.message) {
       group.messages = [...group.messages, updateGroupDto.message];
     }

@@ -25,6 +25,7 @@ export class MessagesService {
     const messageToCreate = {
       ...createMessageDto,
       username: req.user.username,
+      user_id: req.user.sub,
       date: new Date(),
     };
 

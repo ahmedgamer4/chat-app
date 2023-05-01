@@ -1,16 +1,13 @@
+import { Inject, Logger, Request } from '@nestjs/common';
 import {
+  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
 } from '@nestjs/websockets';
-import { MessagesService } from '../messages/messages.service';
-import { GroupsService } from '../groups/groups.service';
-import { MessageBody } from '@nestjs/websockets';
-import { Logger, Request } from '@nestjs/common';
-import { CreateMessageDto } from '../messages/dto/create-message.dto';
-import { UsersService } from '../users/users.service';
+import { CreateMessageDto } from 'src/messages/dto/create-message.dto';
+import { ChatService } from './chat.service';
 
-type IPayload = {
+export type IPayload = {
   group_id: number;
   user: number;
 } & CreateMessageDto;
@@ -21,53 +18,31 @@ type IPayload = {
   },
 })
 export class ChatGateway {
-  @WebSocketServer()
-  server;
+  constructor(private chatService: ChatService) {}
 
-  private logger = new Logger('ChatGateway');
-
-  constructor(
-    private messagesService: MessagesService,
-    private groupsService: GroupsService,
-    private userssService: UsersService,
-  ) { }
+  // logger = new Logger('ChatGateway');
 
   handleConnection(client: any) {
-    console.log('Client connected', client.id);
+    // return this.logger.log(client.id);
+    return this.chatService.findAllMessagesInGroup(1);
   }
 
   handleDisconnect(client: any) {
-    console.log('Client disconnected', client.id);
+    // return this.logger.log(client.id);
   }
 
   @SubscribeMessage('findAllMessages')
-  async findAllMessages() {
-    const messages = await this.messagesService.getMessages();
-    this.server.emit('messages', messages);
+  findAllMessages() {
+    return this.chatService.findAllMessages();
   }
 
   @SubscribeMessage('findAllMessagesInGroup')
-  async findAllMessagesInGroup(@MessageBody() group_id: number) {
-    const group = await this.groupsService.getGroupById(group_id);
-    this.server.emit('messages', group.messages);
+  findAllMessagesInGroup(@MessageBody() group_id: number) {
+    return this.chatService.findAllMessagesInGroup(group_id);
   }
 
   @SubscribeMessage('createMessage')
-  async createMessage(@MessageBody() payload: IPayload, @Request() req: any) {
-    const message = await this.messagesService.createMessage(
-      { content: payload.content },
-      req,
-    );
-
-    await this.groupsService.updateGroup(payload.group_id, req, {
-      message,
-      user: payload.user,
-    });
-
-    await this.userssService.updateUser(req.user.sub, {
-      message: message,
-    });
-
-    this.server.emit('message', message);
+  createMessage(@MessageBody() payload: IPayload, @Request() req: any) {
+    return this.chatService.createMessage(payload, req);
   }
 }
