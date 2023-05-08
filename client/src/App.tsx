@@ -63,7 +63,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/edit" element={<Edit />} />
         <Route path="/chat" element={<Chat />} />
-        <Route path="*" element={<Navigate replace to="/login" />} />
+        {/* <Route path="*" element={<Navigate replace to="/login" />} /> */}
       </Routes>
       <Toaster />
     </div>

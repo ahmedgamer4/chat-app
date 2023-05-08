@@ -1,7 +1,7 @@
 import { VariantProps, cva } from "class-variance-authority";
 import React from "react";
 import { useAtom } from "jotai";
-import { GripVertical, LogOut, UserIcon, UsersIcon } from "lucide-react";
+import { ChevronDown, LogOut, UserIcon, UsersIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -70,7 +70,7 @@ const UserDropdownMenu = React.forwardRef<
           className="text-xs bg-slate-900 rounded-md w-10 h-10 text-white"
         />
         <p className="text-sm">{user.name}</p>
-        <GripVertical size={18} />
+        <ChevronDown size={18} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40 p-2 rounded-lg">
         <DropdownMenuItem className="">

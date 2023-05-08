@@ -7,8 +7,8 @@ export type Group = {
   id: number;
   name: string;
   description: string;
-  messages?: Message[];
-  users?: User[];
+  messages: Message[];
+  users: Omit<User, "messages">[];
 };
 
 export type CreateGroupDto = {
@@ -22,6 +22,8 @@ export const getAllGroups = async (): Promise<Group[]> => {
   const config = {
     headers: { Authorization: token.token },
   };
+
+  console.log("token from group", config);
   const groups = await axios.get(baseUrl, config);
   return groups.data;
 };
@@ -30,7 +32,8 @@ export const createGroup = async (data: CreateGroupDto) => {
   const config = {
     headers: { Authorization: token.token },
   };
-  await axios.post(baseUrl, data, config);
+  const group = await axios.post(baseUrl, data, config);
+  return group;
 };
 
 export const getGroup = async (id: number) => {
