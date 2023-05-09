@@ -23,8 +23,8 @@ import { messagesAtom } from "../context/currentMessages";
 import { Message } from "../services/message";
 import MessageContent from "../components/MessageContent";
 import { ScrollArea } from "../components/ui/ScrollArea";
-
-const socket = io("http://localhost:3000");
+import MessageForm from "../components/RTE";
+import { socket } from "../services/socket";
 
 const Chat = () => {
   const { toast } = useToast();
@@ -82,15 +82,6 @@ const Chat = () => {
     newGroupMutation.mutate(newGroup);
   };
 
-  const sendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    socket.emit("findAllMessages", () => {
-      // setTest(`You are connected with id ${socket.id}`);
-      socket.emit("createMessage");
-    });
-  };
-
   return (
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
       <div className="flex w-full min-h-screen">
@@ -109,19 +100,7 @@ const Chat = () => {
               ))}
             </ScrollArea>
           </div>
-          <form onSubmit={sendMessage}>
-            <label className="absolute bottom-4 w-[92%] left-1/2 -translate-x-1/2">
-              <Input
-                placeholder="Type messsage here "
-                className="relative h-12"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-              <Button className="h-9 w-9 p-2 absolute right-1.5 bottom-1.5">
-                <SendIcon size={20} />
-              </Button>
-            </label>
-          </form>
+          <MessageForm />
         </section>
       </div>
       <DialogContent>

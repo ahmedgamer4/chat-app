@@ -11,7 +11,6 @@ import UserDropdownMenu from "./UserDropdownMenu";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Skeleton } from "./ui/Skeleton";
-import { SheetTrigger } from "./ui/Sheet";
 import { DialogTrigger } from "./ui/Dialog";
 
 type SearchNavProps = {
@@ -21,9 +20,9 @@ type SearchNavProps = {
 const GroupsSkeleton = () => {
   return (
     <Fragment>
-      <Skeleton className="mt-5 w-full h-16 rounded-md bg-slate-800 " />
-      <Skeleton className="mt-4 w-full h-16 rounded-md bg-slate-800 " />
-      <Skeleton className="mt-4 w-full h-16 rounded-md bg-slate-800 " />
+      <Skeleton className="mt-5 w-full h-16 rounded-md dark:bg-slate-800" />
+      <Skeleton className="mt-4 w-full h-16 rounded-md dark:bg-slate-800" />
+      <Skeleton className="mt-4 w-full h-16 rounded-md dark:bg-slate-800" />
     </Fragment>
   );
 };
@@ -33,7 +32,7 @@ const SearchNav = ({ setModalOpen }: SearchNavProps) => {
   const { toast } = useToast();
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
 
   const { isLoading, isError } = useQuery({
     queryKey: ["groups", groups],
