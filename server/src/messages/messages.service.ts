@@ -26,6 +26,7 @@ export class MessagesService {
       ...createMessageDto,
       username: req.user.username,
       user_id: req.user.sub,
+      user_photo: req.user.photo,
       date: new Date(),
     };
 

@@ -31,6 +31,14 @@ export class Message {
 
   @ApiProperty()
   @Column({
+    type: 'varchar',
+    // TODO: Remove when drop the tables
+    nullable: true,
+  })
+  user_photo: string;
+
+  @ApiProperty()
+  @Column({
     type: 'date',
   })
   date: Date;
