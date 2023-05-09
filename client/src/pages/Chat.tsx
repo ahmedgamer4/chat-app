@@ -1,9 +1,10 @@
 import { useAtom } from "jotai";
-import { Loader2, MenuIcon, SendIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader2, MenuIcon } from "lucide-react";
+import { Fragment, useEffect, useState } from "react";
 import { useMutation } from "react-query";
-import { io } from "socket.io-client";
 import GroupNav from "../components/GroupNav";
+import MessageContent from "../components/MessageContent";
+import MessageForm from "../components/RTE";
 import SearchNav from "../components/SearchNav";
 import { Button } from "../components/ui/Button";
 import {
@@ -14,16 +15,14 @@ import {
   DialogTitle,
 } from "../components/ui/Dialog";
 import { Input } from "../components/ui/Input";
+import { ScrollArea } from "../components/ui/ScrollArea";
 import { Textarea } from "../components/ui/Textarea";
 import { groupAtom, groupsAtom } from "../context/atoms";
+import { messagesAtom } from "../context/currentMessages";
 import { groupExists } from "../context/groupExists";
 import { useToast } from "../hooks/useToast";
 import { Group, createGroup } from "../services/group";
-import { messagesAtom } from "../context/currentMessages";
 import { Message } from "../services/message";
-import MessageContent from "../components/MessageContent";
-import { ScrollArea } from "../components/ui/ScrollArea";
-import MessageForm from "../components/RTE";
 import { socket } from "../services/socket";
 
 const Chat = () => {
@@ -31,8 +30,6 @@ const Chat = () => {
 
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
-  const [message, setMessage] = useState("");
-  const [test, setTest] = useState("");
 
   const [isLoading, setLoading] = useState(false);
   const [groupOpen] = useAtom(groupExists);
@@ -87,20 +84,31 @@ const Chat = () => {
       <div className="flex w-full min-h-screen">
         {groupOpen ? <GroupNav /> : <SearchNav setModalOpen={setModalOpen} />}
         <section className="flex-grow relative">
-          <div className="border-b fixed shadow w-full py-3 px-3 sm:px-9 flex gap-3 items-center">
+          <div className="border-b bg-white z-10 dark:bg-background fixed shadow w-full py-3 px-3 sm:px-9 flex gap-3 items-center">
             <button className="sm:hidden">
               <MenuIcon size={22} />
             </button>
-            <h2 className="uppercase text-[17px]">{group.name}</h2>
+            <h2 className="uppercase text-[17px]">
+              {group.name ? group.name : "WELCOME"}
+            </h2>
           </div>
-          <div className="w-11/12 mx-auto mt-16">
-            <ScrollArea className="h-full w-full">
-              {messages.map((message) => (
-                <MessageContent message={message} key={message.id} />
-              ))}
-            </ScrollArea>
-          </div>
-          <MessageForm />
+          {group.id ? (
+            <Fragment>
+              <ScrollArea className="h-[70%] mt-8 mx-2 sm:mx-9 overflow-y-scroll">
+                <div>
+                  {messages.map((message) => (
+                    <MessageContent message={message} key={message.id} />
+                  ))}
+                </div>
+              </ScrollArea>
+              <MessageForm />
+            </Fragment>
+          ) : (
+            <img
+              src="https://m.media-amazon.com/images/I/51y8GUVKJoL._AC_UF894,1000_QL80_.jpg"
+              className="w-[90%] mt-10 sm:w-[700px] mx-auto"
+            />
+          )}
         </section>
       </div>
       <DialogContent>

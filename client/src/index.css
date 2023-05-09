@@ -2,6 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+ul {
+  list-style: disc;
+}
+
+ol {
+  list-style: decimal;
+}
+
+h4 {
+  font-size: 20px;
+}
+
+code {
+  display: block;
+  color: white;
+  border: #222 solid 1px;
+  background: #111;
+  border-radius: 6px;
+  padding: 4px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+code.dark {
+  color: white;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -35,7 +35,7 @@
     "lucide-react": "^0.176.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-markdown": "^8.0.7",
+    "react-html-parser": "^2.0.2",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.10.0",
     "socket.io-client": "^4.6.1",

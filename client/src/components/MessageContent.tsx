@@ -1,5 +1,5 @@
 import { Message } from "../services/message";
-import Markdown from "react-markdown";
+import ReactHTMLParser from "react-html-parser";
 
 type MessageContentProps = {
   message: Message;
@@ -9,7 +9,7 @@ const MessageContent = ({ message }: MessageContentProps) => {
   const date = String(message.date).slice(6);
 
   return (
-    <div className="flex gap-3 items-center mt-9">
+    <div className="flex gap-3 mt-9 border rounded-md pl-3 pt-3">
       <img
         src={message.user_photo}
         alt={message.username}
@@ -19,7 +19,7 @@ const MessageContent = ({ message }: MessageContentProps) => {
         <p>{message.username}</p>
         <p className="text-xs">{date}</p>
         <p className="col-start-1 col-end-3 dark:text-gray-200 text-gray-800"></p>
-        <Markdown>{message.content}</Markdown>
+        <div className="ml-2">{ReactHTMLParser(message.content)}</div>
       </div>
     </div>
   );

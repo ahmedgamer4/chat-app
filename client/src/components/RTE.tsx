@@ -8,10 +8,17 @@ import SubScript from "@tiptap/extension-subscript";
 import { SendIcon } from "lucide-react";
 import { Button } from "./ui/Button";
 import { socket } from "../services/socket";
+import { useAtom } from "jotai";
+import { groupAtom, userAtom } from "../context/atoms";
+import { messagesAtom } from "../context/currentMessages";
+import { Message } from "../services/message";
 
 const content = "";
 
 const MessageInput = () => {
+  const [group, setGroup] = useAtom(groupAtom);
+  const [messages, setMessages] = useAtom(messagesAtom);
+  const [user] = useAtom(userAtom);
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -27,12 +34,22 @@ const MessageInput = () => {
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     const htmlContent = editor ? editor.getHTML() : "";
-    console.log(htmlContent);
+    const text = editor?.getText();
+    console.log(text);
 
-    // socket.emit("findAllMessages", () => {
-    //   // setTest(`You are connected with id ${socket.id}`);
-    //   socket.emit("createMessage");
-    // });
+    socket.emit(
+      "createMessage",
+      {
+        group_id: group.id,
+        content: htmlContent,
+        user: user,
+      },
+      (res: Message) => {
+        console.log(res);
+        setMessages((prev) => [...prev, res]);
+        setGroup(group);
+      }
+    );
   };
 
   return (
@@ -49,12 +66,7 @@ const MessageInput = () => {
               <RichTextEditor.Code />
             </RichTextEditor.ControlsGroup>
 
-            <RichTextEditor.ControlsGroup>
-              {/* <RichTextEditor.H1 /> */}
-              {/* <RichTextEditor.H2 /> */}
-              <RichTextEditor.H3 />
-              <RichTextEditor.H4 />
-            </RichTextEditor.ControlsGroup>
+            <RichTextEditor.H4 />
 
             <RichTextEditor.ControlsGroup>
               <RichTextEditor.BulletList />
@@ -67,17 +79,11 @@ const MessageInput = () => {
               <RichTextEditor.Link />
               <RichTextEditor.Unlink />
             </RichTextEditor.ControlsGroup>
-
-            <RichTextEditor.ControlsGroup>
-              <RichTextEditor.AlignLeft />
-              <RichTextEditor.AlignCenter />
-              <RichTextEditor.AlignRight />
-            </RichTextEditor.ControlsGroup>
           </RichTextEditor.Toolbar>
 
           <RichTextEditor.Content
             onChange={(_e) => console.log()}
-            className="sm:max-h-24 md:max-h-32 overflow-y-scroll"
+            className="max-h-24 sm:max-h-24 md:max-h-32 overflow-y-scroll"
           />
         </RichTextEditor>
         <Button className="h-9 w-9 p-2 absolute right-1.5 bottom-1.5">

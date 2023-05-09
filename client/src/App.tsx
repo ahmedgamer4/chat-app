@@ -56,14 +56,14 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center">
+    <div className="h-screen flex flex-col justify-center items-center">
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/edit" element={<Edit />} />
         <Route path="/chat" element={<Chat />} />
-        {/* <Route path="*" element={<Navigate replace to="/login" />} /> */}
+        <Route path="*" element={<Navigate replace to="/login" />} />
       </Routes>
       <Toaster />
     </div>
