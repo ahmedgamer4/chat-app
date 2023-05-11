@@ -34,4 +34,4 @@ Here are a few screenshots of the Chatter app:
 
 ## Diagrams
 
-![Diagram](./client/public/Untitled.jpg)
+![Diagram](Untitled.jpg)
