@@ -10,11 +10,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
-import { Message } from 'src/messages/message.entity';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UsersService {
-  constructor(@InjectRepository(User) private usersRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private usersRepo: Repository<User>,
+    private cloudinaryService: CloudinaryService,
+  ) {}
 
   getUsers(): Promise<User[]> {
     return this.usersRepo.find();
@@ -61,6 +64,23 @@ export class UsersService {
     const newUser = this.usersRepo.create(userToCreate);
 
     return this.usersRepo.save(newUser);
+  }
+
+  async updateProfileImage(filename: Express.Multer.File, id: number) {
+    try {
+      const uploadedImage = await this.cloudinaryService.uploadImage(filename);
+
+      const updatedProfile = await this.usersRepo.findOne({ where: { id } });
+
+      updatedProfile.photo = uploadedImage.url;
+
+      console.log(updatedProfile);
+      return this.usersRepo.save(updatedProfile);
+    } catch (error) {
+      throw new BadRequestException({
+        error,
+      });
+    }
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {

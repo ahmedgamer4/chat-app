@@ -8,19 +8,23 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Request,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersService } from './users.service';
-import { User } from './user.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './user.entity';
+import { UsersService } from './users.service';
 
 @ApiTags('Users')
 @Controller('api/users')
@@ -51,6 +55,18 @@ export class UsersController {
   @Post()
   createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.createUser(createUserDto);
+  }
+
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: User })
+  @UseGuards(AuthGuard('jwt'))
+  @Post()
+  @UseInterceptors(FileInterceptor('profileImage'))
+  updateProfileImage(
+    @Request() req: any,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.usersService.updateProfileImage(file, req.user.id);
   }
 
   @ApiBearerAuth()

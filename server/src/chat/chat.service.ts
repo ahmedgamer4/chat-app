@@ -20,15 +20,18 @@ export class ChatService {
     return group.messages;
   }
 
-  async createMessage(payload: IPayload, req: any) {
+  async createMessage(payload: IPayload) {
     const message = await this.messagesService.createMessage(
       { content: payload.content },
-      req,
+      {
+        user_id: payload.user.id,
+        user_photo: payload.user.photo,
+        username: payload.user.name,
+      },
     );
 
-    await this.groupsService.updateGroup(payload.group_id, {
+    await this.groupsService.addMessage(payload.group_id, {
       message,
-      user: req.user.sub,
     });
 
     console.log(message);

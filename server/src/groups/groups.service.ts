@@ -70,6 +70,20 @@ export class GroupsService {
     return group;
   }
 
+  async addMessage(group_id: number, updateGroupDto: UpdateGroupDto) {
+    const group = await this.groupsRepo
+      .createQueryBuilder('group')
+      .leftJoinAndSelect('group.messages', 'message')
+      .where('group.id=:id', { id: group_id })
+      .getOne();
+
+    if (updateGroupDto.message) {
+      group.messages = [...group.messages, updateGroupDto.message];
+    }
+
+    return this.groupsRepo.save(group);
+  }
+
   async updateGroup(group_id: number, updateGroupDto: UpdateGroupDto) {
     const group = await this.groupsRepo
       .createQueryBuilder('group')

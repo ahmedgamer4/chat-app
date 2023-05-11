@@ -5,9 +5,9 @@ import { Message } from '../../messages/message.entity';
 export class UpdateGroupDto {
   @ApiProperty()
   @IsOptional()
-  message: Message;
+  message?: Message;
 
   @ApiProperty()
-  @IsNotEmpty()
-  user: number;
+  @IsOptional()
+  user?: number;
 }

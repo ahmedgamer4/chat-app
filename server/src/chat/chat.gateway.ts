@@ -1,15 +1,18 @@
-import { Inject, Logger, Request } from '@nestjs/common';
+import { Logger, Request, UseGuards } from '@nestjs/common';
 import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 import { CreateMessageDto } from 'src/messages/dto/create-message.dto';
+import { User } from 'src/users/user.entity';
 import { ChatService } from './chat.service';
 
 export type IPayload = {
   group_id: number;
-  user: number;
+  user: User;
 } & CreateMessageDto;
 
 @WebSocketGateway({
@@ -18,17 +21,18 @@ export type IPayload = {
   },
 })
 export class ChatGateway {
+  @WebSocketServer()
+  server: Server;
   constructor(private chatService: ChatService) {}
 
-  // logger = new Logger('ChatGateway');
+  logger = new Logger('ChatGateway');
 
   handleConnection(client: any) {
-    // return this.logger.log(client.id);
-    return this.chatService.findAllMessagesInGroup(1);
+    this.logger.log(client.id);
   }
 
   handleDisconnect(client: any) {
-    // return this.logger.log(client.id);
+    this.logger.log(client.id);
   }
 
   @SubscribeMessage('findAllMessages')
@@ -42,7 +46,9 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('createMessage')
-  createMessage(@MessageBody() payload: IPayload, @Request() req: any) {
-    return this.chatService.createMessage(payload, req);
+  async createMessage(@MessageBody() payload: IPayload) {
+    console.log(payload);
+    const message = await this.chatService.createMessage(payload);
+    this.server.emit('recieveMessage', message);
   }
 }

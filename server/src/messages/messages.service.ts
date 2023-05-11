@@ -24,11 +24,12 @@ export class MessagesService {
   ): Promise<Message> {
     const messageToCreate = {
       ...createMessageDto,
-      username: req.user.username,
-      user_id: req.user.sub,
-      user_photo: req.user.photo,
+      username: req.username,
+      user_id: req.id,
+      user_photo: req.photo,
       date: new Date(),
     };
+    console.log(messageToCreate);
 
     const newMessage = this.messagesRepo.create(messageToCreate);
 
