@@ -1,13 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import toStream from 'buffer-to-stream';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
+
+const toStream = require('buffer-to-stream');
 
 @Injectable()
 export class CloudinaryService {
   async uploadImage(
     file: Express.Multer.File,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
-    if (file.size > 1000000) {
+    if (file.size > 2000001) {
       throw new BadRequestException({
         error: 'Image size limit',
       });

@@ -1,8 +1,8 @@
+import { Link } from "react-router-dom";
 import RegisterForm from "../components/RegisterForm";
-import google from "/icons/Google.svg";
 import facebook from "/icons/Facebook.svg";
 import github from "/icons/Gihub.svg";
-import { Link } from "react-router-dom";
+import google from "/icons/Google.svg";
 
 const Register = () => {
   return (

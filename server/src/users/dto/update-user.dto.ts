@@ -35,7 +35,6 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   @MinLength(5)
   @MaxLength(5000)
-  @IsAlphanumeric()
   bio?: string;
 
   @IsOptional()

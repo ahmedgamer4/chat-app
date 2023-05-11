@@ -52,7 +52,6 @@ export class AuthService {
         username: user.name,
         photo: user.photo,
       });
-      console.log(user.name);
 
       return { token, user };
     } else {

@@ -60,6 +60,7 @@ const RegisterForm = () => {
           id="email"
           className="mt-4 relative pl-8"
           placeholder="Email"
+          type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -71,6 +72,7 @@ const RegisterForm = () => {
         ></LockIcon>
         <Input
           id="password"
+          type="password"
           className="mt-4 relative pl-8"
           placeholder="Password"
           value={password}

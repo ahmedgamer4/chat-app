@@ -11,6 +11,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ChatModule } from './chat/chat.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import authConfig from './config/auth.config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -26,6 +28,9 @@ import authConfig from './config/auth.config';
     }),
     ChatModule,
     CloudinaryModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'dist'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

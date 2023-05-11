@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:3000/api/auth";
+const baseUrl = location.origin + "/api/auth";
 
 type RegisterUserDto = {
   name: string;
@@ -13,7 +13,7 @@ type LoginUserDto = {
   password: string;
 };
 
-export let token = {
+export const token = {
   token: "",
   user: {
     id: 0,

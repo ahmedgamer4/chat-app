@@ -5,19 +5,15 @@ import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
-import { SendIcon } from "lucide-react";
+import { Loader2, SendIcon } from "lucide-react";
 import { Button } from "./ui/Button";
 import { socket } from "../services/socket";
 import { useAtom } from "jotai";
 import { groupAtom, userAtom } from "../context/atoms";
-import { messagesAtom } from "../context/currentMessages";
-import { Message } from "../services/message";
-
-const content = "";
+import { useState } from "react";
 
 const MessageInput = () => {
-  const [group, setGroup] = useAtom(groupAtom);
-  const [messages, setMessages] = useAtom(messagesAtom);
+  const [group] = useAtom(groupAtom);
   const [user] = useAtom(userAtom);
   const editor = useEditor({
     extensions: [
@@ -28,15 +24,15 @@ const MessageInput = () => {
       SubScript,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
-    content,
   });
+
+  const [sendLoading, setSendLoading] = useState(false);
 
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     const htmlContent = editor ? editor.getHTML() : "";
-    const text = editor?.getText();
-    console.log(text);
 
+    setSendLoading(true);
     socket.emit(
       "createMessage",
       {
@@ -44,10 +40,8 @@ const MessageInput = () => {
         content: htmlContent,
         user: user,
       },
-      (res: Message) => {
-        console.log(res);
-        setMessages((prev) => [...prev, res]);
-        setGroup(group);
+      () => {
+        setSendLoading(false);
       }
     );
   };
@@ -61,7 +55,6 @@ const MessageInput = () => {
               <RichTextEditor.Bold />
               <RichTextEditor.Italic />
               <RichTextEditor.Underline />
-              <RichTextEditor.Strikethrough />
               <RichTextEditor.ClearFormatting />
               <RichTextEditor.Code />
             </RichTextEditor.ControlsGroup>
@@ -81,13 +74,17 @@ const MessageInput = () => {
             </RichTextEditor.ControlsGroup>
           </RichTextEditor.Toolbar>
 
-          <RichTextEditor.Content
-            onChange={(_e) => console.log()}
-            className="max-h-24 sm:max-h-24 md:max-h-32 overflow-y-scroll"
-          />
+          <RichTextEditor.Content className="max-h-24 sm:max-h-24 md:max-h-32 overflow-y-scroll" />
         </RichTextEditor>
-        <Button className="h-9 w-9 p-2 absolute right-1.5 bottom-1.5">
-          <SendIcon size={20} />
+        <Button
+          disabled={sendLoading}
+          className="h-9 w-9 p-2 absolute right-1.5 bottom-1.5"
+        >
+          {sendLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <SendIcon size={20} />
+          )}
         </Button>
       </label>
     </form>

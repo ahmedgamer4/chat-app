@@ -6,10 +6,9 @@ import { Link } from "react-router-dom";
 
 const ProfileInfo = () => {
   const [user] = useAtom(userAtom);
-  console.log(user);
 
   return (
-    <section className="flex flex-col items-center mx-auto w-full max-w-[800px] min-w-[200px]">
+    <section className="flex flex-col items-center mx-auto w-full max-w-[800px] min-w-[200px] mt-9">
       <h1 className="mx-auto text-3xl">Personal Info</h1>
       <p className="mx-auto text-sm mt-4">
         Basic info, like your name and photo
@@ -30,7 +29,7 @@ const ProfileInfo = () => {
         <section className="flex justify-between py-5 px-6">
           <p>PHOTO</p>
           <img
-            className="w-14 h-14 rounded-lg text-white bg-slate-900"
+            className="object-cover w-14 h-14 rounded-lg text-white bg-slate-900"
             src={user.photo}
             alt={user.name}
           />

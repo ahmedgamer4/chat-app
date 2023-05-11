@@ -70,12 +70,16 @@ export class UsersService {
     try {
       const uploadedImage = await this.cloudinaryService.uploadImage(filename);
 
-      const updatedProfile = await this.usersRepo.findOne({ where: { id } });
+      const userToUpdate = await this.usersRepo.findOne({ where: { id } });
 
-      updatedProfile.photo = uploadedImage.url;
+      const userToUpload: User = {
+        ...userToUpdate,
+        photo: uploadedImage.url,
+      };
 
-      console.log(updatedProfile);
-      return this.usersRepo.save(updatedProfile);
+      const userToSave = this.usersRepo.create(userToUpload);
+
+      return this.usersRepo.save(userToSave);
     } catch (error) {
       throw new BadRequestException({
         error,

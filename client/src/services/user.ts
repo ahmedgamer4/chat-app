@@ -33,7 +33,7 @@ export type UpdateUserDto = {
   photo?: string;
 };
 
-const baseUrl = "http://localhost:3000/api/users";
+const baseUrl = location.origin + "/api/users";
 
 export const getAll = async () => {
   const config = {
@@ -47,7 +47,7 @@ export const createUser = async (data: CreateUserDto) => {
   await axios.post(baseUrl, data);
 };
 
-export const getUser = async (id: number) => {
+export const getUser = async (id: number): Promise<User> => {
   const config = {
     headers: { Authorization: token.token },
   };
@@ -55,10 +55,25 @@ export const getUser = async (id: number) => {
   return user.data;
 };
 
-export const updateUser = async (id: number, data: UpdateUserDto) => {
+export const updateUser = async (
+  id: number,
+  data: UpdateUserDto
+): Promise<User> => {
   const config = {
     headers: { Authorization: token.token },
   };
   const user = await axios.patch(`${baseUrl}/${id}`, data, config);
+  return user.data;
+};
+
+export const updateProfileImage = async (image: File): Promise<User> => {
+  const config = {
+    headers: { Authorization: token.token },
+  };
+
+  const imgFormData = new FormData();
+  imgFormData.append("profileImage", image);
+
+  const user = await axios.post(`${baseUrl}/uploadImage`, imgFormData, config);
   return user.data;
 };

@@ -25,8 +25,8 @@ export class MessagesService {
     const messageToCreate = {
       ...createMessageDto,
       username: req.username,
-      user_id: req.id,
-      user_photo: req.photo,
+      user_id: req.user_id,
+      user_photo: req.user_photo,
       date: new Date(),
     };
     console.log(messageToCreate);

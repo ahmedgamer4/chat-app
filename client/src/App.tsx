@@ -1,4 +1,6 @@
+// @ts-nocheck
 import { useAtom } from "jotai";
+import * as React from "react";
 import { useEffect } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { Toaster } from "./components/ui/Toaster";
@@ -6,41 +8,24 @@ import { userAtom } from "./context/atoms";
 import useDarkMode from "./hooks/useDarkMode";
 import Edit from "./pages/Edit";
 import Login from "./pages/Login";
-import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import { setToken, token } from "./services/auth";
-import Chat from "./pages/Chat";
-import * as React from "react";
+import { getUser } from "./services/user";
+import { Skeleton } from "./components/ui/Skeleton";
 
-import { ScrollArea } from "./components/ui/ScrollArea";
-import { Separator } from "./components/ui/Separator";
+const Chat = React.lazy(() => import("./pages/Chat"));
+const Profile = React.lazy(() => import("./pages/Profile"));
 
-const tags = Array.from({ length: 50 }).map(
-  (_, i, a) => `v1.2.0-beta.${a.length - i}`
-);
-
-export function ScrollAreaDemo() {
+const Loading = () => {
   return (
-    <ScrollArea className="h-72 w-48 rounded-md border">
-      <div className="p-4">
-        <h4 className="mb-4 text-sm font-medium leading-none">Tags</h4>
-        {tags.map((tag) => (
-          <React.Fragment>
-            <div className="text-sm" key={tag}>
-              {tag}
-            </div>
-            <Separator className="my-2" />
-          </React.Fragment>
-        ))}
-      </div>
-    </ScrollArea>
+    <Skeleton className="w-[97%] h-[90%] rounded-lg dark:bg-slate-900 bg-gray-100" />
   );
-}
+};
 
 function App() {
   const navigate = useNavigate();
-  const {} = useDarkMode();
-  const [user, setUser] = useAtom(userAtom);
+  const dark = useDarkMode();
+  const [, setUser] = useAtom(userAtom);
 
   useEffect(() => {
     const loggedUser = localStorage.getItem("loggedUser");
@@ -48,24 +33,26 @@ function App() {
     if (loggedUser) {
       const token = JSON.parse(loggedUser);
       setToken(token.token);
-      setUser(token.user);
-      console.log(user);
+      getUser(token.user.id).then((user) => {
+        setUser(user);
+      });
     }
     if (!token.token) navigate("/login");
-    console.log(token);
   }, []);
 
   return (
     <div className="h-screen flex flex-col justify-center items-center">
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/edit" element={<Edit />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="*" element={<Navigate replace to="/login" />} />
-      </Routes>
-      <Toaster />
+      <React.Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/edit" element={<Edit />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="*" element={<Navigate replace to="/login" />} />
+        </Routes>
+        <Toaster />
+      </React.Suspense>
     </div>
   );
 }

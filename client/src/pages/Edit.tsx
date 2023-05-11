@@ -7,7 +7,11 @@ import { Input } from "../components/ui/Input";
 import { userAtom } from "../context/atoms";
 import useDarkMode from "../hooks/useDarkMode";
 import { useToast } from "../hooks/useToast";
-import { UpdateUserDto, updateUser } from "../services/user";
+import {
+  UpdateUserDto,
+  updateProfileImage,
+  updateUser,
+} from "../services/user";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
@@ -31,7 +35,6 @@ const Edit = () => {
     if (bio) userToUpdate.bio = bio;
     if (phone) userToUpdate.phone = phone;
     if (password) userToUpdate.password = password;
-    console.log(userToUpdate);
 
     if (Object.keys(userToUpdate).length === 0) {
       toast({
@@ -46,10 +49,23 @@ const Edit = () => {
     toast({
       title: "Edited Successfully",
     });
-    console.log(updatedUser);
     setLoading(false);
 
     navigate("/profile");
+  };
+
+  const uploadImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      if (e.target.files && e.target.files[0]) {
+        const user = await updateProfileImage(e.target.files[0]);
+        setUser(user);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -78,11 +94,21 @@ const Edit = () => {
             </p>
           </section>
           <div>
-            <img
-              className="w-14 h-14 rounded-lg text-white bg-slate-700"
-              src={user.photo}
-              alt={user.name}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              id="input-file-field"
+              name="profileImage"
+              onChange={uploadImg}
             />
+            <label htmlFor="input-file-field" className="cursor-pointer block">
+              <img
+                src={user.photo}
+                alt={user.name}
+                className="object-cover w-14 h-14 rounded-md mb-3"
+              />
+            </label>
           </div>
           <label htmlFor="">
             <p>Name</p>

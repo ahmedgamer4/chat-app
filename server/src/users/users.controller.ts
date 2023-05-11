@@ -60,13 +60,13 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: User })
   @UseGuards(AuthGuard('jwt'))
-  @Post()
+  @Post('uploadImage')
   @UseInterceptors(FileInterceptor('profileImage'))
   updateProfileImage(
     @Request() req: any,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.usersService.updateProfileImage(file, req.user.id);
+    return this.usersService.updateProfileImage(file, req.user.sub);
   }
 
   @ApiBearerAuth()

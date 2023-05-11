@@ -12,7 +12,7 @@ import {
 import { Separator } from "../components/ui/Separator";
 import { userAtom } from "../context/atoms";
 import { cn } from "../lib/utils";
-import { resetToken, token } from "../services/auth";
+import { resetToken } from "../services/auth";
 
 const userDropdownMenuVariants = cva("", {
   variants: {
@@ -33,7 +33,7 @@ export type UserDropdownMenuProps = VariantProps<
 const UserDropdownMenu = React.forwardRef<
   HTMLDivElement,
   UserDropdownMenuProps
->(({ size }, ref) => {
+>(({ size }) => {
   const navigate = useNavigate();
   const [user, setUser] = useAtom(userAtom);
 
@@ -53,7 +53,6 @@ const UserDropdownMenu = React.forwardRef<
       facebookId: "",
     });
     resetToken();
-    console.log(token);
     navigate("/login");
   };
 
@@ -67,7 +66,7 @@ const UserDropdownMenu = React.forwardRef<
         <img
           src={user.photo}
           alt={user.name}
-          className="text-xs bg-slate-900 rounded-md w-10 h-10 text-white"
+          className="object-cover text-xs bg-slate-900 rounded-md w-10 h-10 text-white"
         />
         <p className="text-sm">{user.name}</p>
         <ChevronDown size={18} />

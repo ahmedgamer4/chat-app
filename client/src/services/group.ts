@@ -16,14 +16,12 @@ export type CreateGroupDto = {
   description: string;
 };
 
-const baseUrl = "http://localhost:3000/api/groups";
+const baseUrl = location.origin + "/api/groups";
 
 export const getAllGroups = async (): Promise<Group[]> => {
   const config = {
     headers: { Authorization: token.token },
   };
-
-  console.log("token from group", config);
   const groups = await axios.get(baseUrl, config);
   return groups.data;
 };
