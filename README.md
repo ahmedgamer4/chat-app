@@ -1,4 +1,7 @@
-## Chatter App Project Overview
+# Demo
+https://chat-app-dud0.onrender.com
+
+# Chatter App Project Overview
 
 Chatter is a real-time messaging app that allows users to communicate with each other in groups.
 The app is built using a variety of modern web development technologies, including:
@@ -12,7 +15,7 @@ The app is built using a variety of modern web development technologies, includi
 - Socket.io
 - Vite
 
-## Project Features
+# Project Features
 
 Some of the main features of Chatter include:
 
@@ -28,10 +31,10 @@ Some of the main features of Chatter include:
 
 - Profile Management: Users can change their name, profile picture, phone, and password.
 
-## Screenshots
+# Screenshots
 
 Here are a few screenshots of the Chatter app:
 
-## Diagrams
+# Diagrams
 
 ![Diagram](Untitled.jpg)
