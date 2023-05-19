@@ -8,6 +8,4 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   autoLoadEntities: true,
   type: 'postgres',
   url: process.env.DATABASE_URI,
-  // TODO: Do not forget to remove this in production
-  synchronize: true,
 };

@@ -9,7 +9,7 @@ export class ChatService {
   constructor(
     private messagesService: MessagesService,
     private groupsService: GroupsService,
-  ) {}
+  ) { }
 
   findAllMessages(): Promise<Message[]> {
     return this.messagesService.getMessages();

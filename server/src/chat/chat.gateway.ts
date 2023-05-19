@@ -1,4 +1,4 @@
-import { Logger, Request, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import {
   MessageBody,
   SubscribeMessage,
@@ -23,7 +23,7 @@ export type IPayload = {
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService) { }
 
   logger = new Logger('ChatGateway');
 
@@ -47,7 +47,6 @@ export class ChatGateway {
 
   @SubscribeMessage('createMessage')
   async createMessage(@MessageBody() payload: IPayload) {
-    console.log(payload);
     const message = await this.chatService.createMessage(payload);
     this.server.emit('recieveMessage', message);
     return message;

@@ -4,11 +4,10 @@ import { Repository } from 'typeorm';
 import { Group } from './group.entity';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
-import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class GroupsService {
-  constructor(@InjectRepository(Group) private groupsRepo: Repository<Group>) {}
+  constructor(@InjectRepository(Group) private groupsRepo: Repository<Group>) { }
 
   getAllGroups(): Promise<Group[]> {
     return this.groupsRepo.find();
@@ -71,17 +70,17 @@ export class GroupsService {
   }
 
   async addMessage(group_id: number, updateGroupDto: UpdateGroupDto) {
-    const group = await this.groupsRepo
-      .createQueryBuilder('group')
-      .leftJoinAndSelect('group.messages', 'message')
-      .where('group.id=:id', { id: group_id })
-      .getOne();
-
-    if (updateGroupDto.message) {
-      group.messages = [...group.messages, updateGroupDto.message];
+    if (!updateGroupDto.message) {
+      throw new BadRequestException({
+        error: 'Should provide a message',
+      });
     }
 
-    return this.groupsRepo.save(group);
+    return this.groupsRepo
+      .createQueryBuilder()
+      .relation(Group, 'messages')
+      .of(group_id)
+      .update(updateGroupDto.message);
   }
 
   async updateGroup(group_id: number, updateGroupDto: UpdateGroupDto) {

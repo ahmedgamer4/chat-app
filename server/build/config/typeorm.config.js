@@ -8,6 +8,5 @@ exports.typeOrmConfig = {
     autoLoadEntities: true,
     type: 'postgres',
     url: process.env.DATABASE_URI,
-    synchronize: true,
 };
 //# sourceMappingURL=typeorm.config.js.map

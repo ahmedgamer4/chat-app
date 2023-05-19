@@ -62,15 +62,16 @@ let GroupsService = class GroupsService {
         return group;
     }
     async addMessage(group_id, updateGroupDto) {
-        const group = await this.groupsRepo
-            .createQueryBuilder('group')
-            .leftJoinAndSelect('group.messages', 'message')
-            .where('group.id=:id', { id: group_id })
-            .getOne();
-        if (updateGroupDto.message) {
-            group.messages = [...group.messages, updateGroupDto.message];
+        if (!updateGroupDto.message) {
+            throw new common_1.BadRequestException({
+                error: 'Should provide a message',
+            });
         }
-        return this.groupsRepo.save(group);
+        return this.groupsRepo
+            .createQueryBuilder()
+            .relation(group_entity_1.Group, 'messages')
+            .of(group_id)
+            .update(updateGroupDto.message);
     }
     async updateGroup(group_id, updateGroupDto) {
         const group = await this.groupsRepo
