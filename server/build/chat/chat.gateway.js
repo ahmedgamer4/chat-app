@@ -35,7 +35,6 @@ let ChatGateway = class ChatGateway {
         return this.chatService.findAllMessagesInGroup(group_id);
     }
     async createMessage(payload) {
-        console.log(payload);
         const message = await this.chatService.createMessage(payload);
         this.server.emit('recieveMessage', message);
         return message;
