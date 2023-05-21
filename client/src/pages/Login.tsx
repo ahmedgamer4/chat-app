@@ -6,8 +6,8 @@ import github from "/icons/Gihub.svg";
 
 const Login = () => {
   return (
-    <div className="w-96 px-6 sm:px-10 py-8 border rounded-xl flex flex-col items-center">
-      <div className="w-full">
+    <div className="w-80 px-6 sm:px-10 py-8 border rounded-xl flex flex-col items-center">
+      <div className="w-11/12">
         <h3 className="max-w-[310px] font-semibold">Login</h3>
         <LoginForm />
       </div>

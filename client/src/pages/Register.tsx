@@ -6,18 +6,11 @@ import google from "/icons/Google.svg";
 
 const Register = () => {
   return (
-    <div className="w-96 px-6 sm:px-10  py-8 border rounded-xl flex flex-col items-center">
-      <div>
+    <div className="w-80 px-6 sm:px-10  py-8 border rounded-xl flex flex-col items-center">
+      <div className="w-11/12">
         <h3 className="max-w-[310px] font-semibold">
-          Join thousands of learners from around the world
+          Join Us
         </h3>
-        <p
-          className="text-gray-800 text-sm mt-3
-          dark:text-gray-200"
-        >
-          Master web development by making real-life projects. There are
-          multiple paths for you to choose
-        </p>
         <RegisterForm />
       </div>
       <p className="text-gray-500 text-[14px] mt-5 dark:text-gray-300">
