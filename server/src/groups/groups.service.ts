@@ -76,11 +76,11 @@ export class GroupsService {
       });
     }
 
-    return this.groupsRepo
-      .createQueryBuilder()
-      .relation(Group, 'messages')
-      .of(group_id)
-      .update(updateGroupDto.message);
+    const group = await this.groupsRepo.findOne({ where: { id: group_id, }, })
+
+    group.messages.push(updateGroupDto.message)
+
+    return this.groupsRepo.save(group)
   }
 
   async updateGroup(group_id: number, updateGroupDto: UpdateGroupDto) {

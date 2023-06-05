@@ -10,7 +10,7 @@ export declare class GroupsService {
     createGroup(createGroupDto: CreateGroupDto): Promise<Group>;
     getGroupByName(name: string): Promise<Group>;
     getGroupById(id: number): Promise<Group>;
-    addMessage(group_id: number, updateGroupDto: UpdateGroupDto): Promise<import("typeorm").UpdateQueryBuilder<Group>>;
+    addMessage(group_id: number, updateGroupDto: UpdateGroupDto): Promise<Group>;
     updateGroup(group_id: number, updateGroupDto: UpdateGroupDto): Promise<Group>;
     deleteGroups(): Promise<import("typeorm").DeleteResult>;
 }
